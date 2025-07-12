@@ -1,5 +1,5 @@
 import * as React from "react";
-import { House, Map, PieChart, Clapperboard } from "lucide-react";
+import { House, Clapperboard, Users } from "lucide-react";
 
 import { NavMain } from "@/components/navbar/nav-main";
 import {
@@ -7,13 +7,13 @@ import {
   SidebarContent,
   SidebarRail,
 } from "@/components/navbar/ui/sidebar";
+import { path } from "@/constants/routes.const";
 
-// This is sample data.
 const data = {
-  navMain: [
+  DropDown: [
     {
       title: "All Genres",
-      url: "#",
+      url: path.movies,
       icon: Clapperboard,
       items: [
         {
@@ -35,21 +35,16 @@ const data = {
       ],
     },
   ],
-  projects: [
+  mainLinks: [
     {
       name: "Home",
-      url: "#",
+      url: path.home,
       icon: House,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "About",
+      url: path.about,
+      icon: Users,
     },
   ],
 };
@@ -57,7 +52,7 @@ const data = {
 export function AppSidebar({ ...props }) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarContent>
+      <SidebarContent className="flex justify-center flex-col">
         <NavMain items={data} />
       </SidebarContent>
       <SidebarRail />
