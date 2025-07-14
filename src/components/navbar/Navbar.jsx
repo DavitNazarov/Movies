@@ -12,15 +12,17 @@ import { BreadCrumb } from "./ui/BreadCrumb.index";
 
 const Navbar = () => {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1 cursor-pointer" />
-          <Separator orientation="vertical" className="mr-2 h-4/12" />
+          <Separator orientation="vertical" className="mr-2 " />
           <BreadCrumb />
         </header>
-        <Outlet />
+        <main>
+          <Outlet />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
