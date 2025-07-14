@@ -6,15 +6,18 @@ import { AlertCircleIcon } from "lucide-react";
 
 const NotFound = () => {
   return (
-    <div className="flex justify-center items-center">
-      <Alert variant="destructive">
-        <AlertCircleIcon />
+    <div className="flex justify-center items-center h-screen w-full px-4">
+      <Alert
+        variant="destructive"
+        className="flex flex-col justify-center items-center w-full max-w-3xl text-center gap-2"
+      >
+        <AlertCircleIcon className="w-6 h-6" />
         <AlertTitle>Heads up!</AlertTitle>
-        <AlertDescription className="flex">
-          Hey, page not Found! go to the
-          <Link to={path.home} className="font-bold">
+        <AlertDescription>
+          Hey, page not found! Go to the{" "}
+          <Link to={path.home} className="font-bold underline text-primary">
             HOME
-          </Link>
+          </Link>{" "}
           page!
         </AlertDescription>
       </Alert>

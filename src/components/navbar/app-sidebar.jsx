@@ -17,19 +17,19 @@ const data = {
       icon: Clapperboard,
       items: [
         {
-          title: "General",
+          title: "Movies",
+          url: path.movies,
+        },
+        {
+          title: "Drama",
+          url: path.movieDetail,
+        },
+        {
+          title: "Fiction",
           url: "#",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "More",
           url: "#",
         },
       ],
