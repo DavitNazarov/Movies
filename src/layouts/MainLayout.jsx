@@ -1,9 +1,9 @@
-import Navbar from "@/components/navbar/Navbar";
+import Index from "@/components/navbar/Index";
 
 export default function MainLayout() {
   return (
     <>
-      <Navbar />
+      <Index />
     </>
   );
 }

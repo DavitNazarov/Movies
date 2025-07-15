@@ -5,7 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/navbar/ui/breadcrumb";
+} from "@/components/ui/breadcrumb";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 

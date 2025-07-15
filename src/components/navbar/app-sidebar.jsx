@@ -1,60 +1,28 @@
-import * as React from "react";
-import { House, Clapperboard, Users } from "lucide-react";
+import { useState } from "react";
 
 import { NavMain } from "@/components/navbar/nav-main";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarRail,
-} from "@/components/navbar/ui/sidebar";
-import { path } from "@/constants/routes.const";
-
-const data = {
-  DropDown: [
-    {
-      title: "All Genres",
-      url: path.movies,
-      icon: Clapperboard,
-      items: [
-        {
-          title: "Movies",
-          url: path.movies,
-        },
-        {
-          title: "Drama",
-          url: path.movieDetail,
-        },
-        {
-          title: "Fiction",
-          url: "#",
-        },
-        {
-          title: "More",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  mainLinks: [
-    {
-      name: "Home",
-      url: path.home,
-      icon: House,
-    },
-    {
-      name: "About",
-      url: path.about,
-      icon: Users,
-    },
-  ],
-};
+} from "@/components/ui/sidebar";
+import { NavUser } from "../ui/nav-user";
+import NavSecondary from "@/components/ui/nav-secondary";
+import { data } from "./NavData";
 
 export function AppSidebar({ ...props }) {
+  //! permanent state ( before real Auth system )
+  const [IsLoggedIn, setIsLoggedIn] = useState(true);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent className="flex justify-center flex-col">
         <NavMain items={data} />
       </SidebarContent>
+      <SidebarFooter>
+        {IsLoggedIn && <NavUser user={data.user} />}
+        {!IsLoggedIn && <NavSecondary items={data.navSecondary} />}
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

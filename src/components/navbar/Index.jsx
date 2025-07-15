@@ -1,16 +1,16 @@
 import React from "react";
 import { AppSidebar } from "@/components/navbar/app-sidebar";
 
-import { Separator } from "@/components/navbar/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/navbar/ui/sidebar";
+} from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
-import { BreadCrumb } from "./ui/BreadCrumb.index";
+import { BreadCrumb } from "../ui/BreadCrumb.index";
 
-const Navbar = () => {
+const Index = () => {
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
@@ -28,4 +28,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Index;

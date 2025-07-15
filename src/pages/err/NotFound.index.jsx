@@ -13,9 +13,9 @@ const NotFound = () => {
       >
         <AlertCircleIcon className="w-6 h-6" />
         <AlertTitle>Heads up!</AlertTitle>
-        <AlertDescription>
+        <AlertDescription className="flex">
           Hey, page not found! Go to the{" "}
-          <Link to={path.home} className="font-bold underline text-primary">
+          <Link to={path.home} className="font-bold  text-red-600">
             HOME
           </Link>{" "}
           page!
