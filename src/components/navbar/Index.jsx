@@ -20,9 +20,10 @@ const Index = () => {
           <Separator orientation="vertical" className="mr-2 " />
           <BreadCrumb />
         </header>
-        <main>
+
+        <section>
           <Outlet />
-        </main>
+        </section>
       </SidebarInset>
     </SidebarProvider>
   );

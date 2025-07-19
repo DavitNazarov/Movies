@@ -7,7 +7,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export const BreadCrumb = () => {
   const location = useLocation();
@@ -26,20 +26,19 @@ export const BreadCrumb = () => {
     setSegment1(pathSegments[0] || "Home");
     setSegment2(pathSegments[1] || "");
   }, [location]);
+  console.log(segment1);
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem className="hidden md:block">
-          <BreadcrumbLink href={location.pathname}>{segment1}</BreadcrumbLink>
+          <Link to={location.pathname}>{segment1}</Link>
         </BreadcrumbItem>
         {segment2 && (
           <>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbLink href={segment2.toLowerCase()}>
-                {segment2}
-              </BreadcrumbLink>
+              <Link to={segment2.toLowerCase()}>{segment2}</Link>
             </BreadcrumbItem>
           </>
         )}

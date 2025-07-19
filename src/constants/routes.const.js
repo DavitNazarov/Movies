@@ -1,9 +1,10 @@
 export const path = {
   home: "/",
+  about: "/about",
   movies: "/movies",
   movieDetail: "/(id: string) => `/movies/${id}`",
-  about: "/about",
   logIn: "/logIn",
   signUp: "/signup",
+  forgotPassword: "/forgot-password",
   notFound: "*",
 };

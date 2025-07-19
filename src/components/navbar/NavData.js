@@ -44,7 +44,7 @@ export const data = {
       icon: Users,
     },
   ],
-  navSecondary: [
+  authBtn: [
     {
       title: "Log In",
       url: path.logIn,

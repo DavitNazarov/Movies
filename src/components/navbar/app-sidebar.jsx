@@ -13,15 +13,17 @@ import { data } from "./NavData";
 
 export function AppSidebar({ ...props }) {
   //! permanent state ( before real Auth system )
-  const [IsLoggedIn, setIsLoggedIn] = useState(true);
+  const [IsLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent className="flex justify-center flex-col">
         <NavMain items={data} />
       </SidebarContent>
       <SidebarFooter>
+        {/* User info */}
         {IsLoggedIn && <NavUser user={data.user} />}
-        {!IsLoggedIn && <NavSecondary items={data.navSecondary} />}
+        {/*Auth buttons  */}
+        {!IsLoggedIn && <NavSecondary items={data.authBtn} />}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
