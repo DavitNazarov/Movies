@@ -2,7 +2,14 @@ import { path } from "@/constants/routes.const";
 import { Route, Routes } from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
 
-import { About, Auth, Home, Movies, NotFound } from "@/pages/lazyPages";
+import {
+  About,
+  Home,
+  Movies,
+  LogIn,
+  SignUp,
+  NotFound,
+} from "@/pages/lazyPages";
 import { Suspense } from "react";
 import Index from "@/components/navbar/Index";
 
@@ -22,8 +29,8 @@ export const AppRoutes = () => {
           <Route path={path.about} element={<About />} />
           <Route path={path.movies} element={<Movies />} />
           {/* //* Auth */}
-          <Route path={path.logIn} element={<Auth />} />
-          <Route path={path.signUp} element={<Auth />} />
+          <Route path={path.logIn} element={<LogIn />} />
+          <Route path={path.signUp} element={<SignUp />} />
           {/*//* Not Found Page  */}
           <Route path={path.notFound} element={<NotFound />} />
         </Route>
