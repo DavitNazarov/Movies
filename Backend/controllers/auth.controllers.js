@@ -1,6 +1,8 @@
 import { User } from "../model/User.model.js";
 import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateTokenAndSetCookie.js";
+import { sendEmail } from "../mail/sendEmail.js";
+import { baseTemplate } from "../mail/templates/base.js";
 
 export const signUp = async (req, res) => {
   const { name, email, password } = req.body;
@@ -30,8 +32,39 @@ export const signUp = async (req, res) => {
 
     await user.save();
 
-    //jwt
-    generateTokenAndSetCookie(res, user._id);
+    // 3) JWT cookie — wrap to avoid killing the request if env is wrong
+    try {
+      if (!process.env.JWT_SECRET) {
+        throw new Error("Missing JWT_SECRET");
+      }
+      generateTokenAndSetCookie(res, user._id);
+    } catch (e) {
+      console.error("JWT error:", e);
+    }
+
+    (async () => {
+      try {
+        const html = baseTemplate({
+          title: "New sign-in to Movie Hub",
+          body: `
+            <h1>Hi${user.name ? `, ${user.name}` : ""}</h1>
+            <p>We noticed a new sign-in to your account just now.</p>
+            <p><a class="button" href="${
+              process.env.APP_URL
+            }">Open Movie Hub</a></p>
+          `,
+        });
+        await sendEmail({
+          to: user.email,
+          subject: "New sign-in to your account",
+          html,
+          text: "New sign-in to your account.",
+        });
+      } catch (e) {
+        console.error("Login email failed:", e?.response?.body || e);
+        // don’t throw; login should still succeed
+      }
+    })();
 
     res.status(201).json({
       message: "User created successfully",
@@ -42,7 +75,7 @@ export const signUp = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: `Internal server error ${error.message}` });
   }
 };
 export const login = async (req, res) => {
