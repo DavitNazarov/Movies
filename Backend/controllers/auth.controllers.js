@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateTokenAndSetCookie.js";
 import { sendEmail } from "../mail/sendEmail.js";
 import { baseTemplate } from "../mail/templates/base.js";
+import { welcomeTemplate } from "../mail/templates/welcome.js";
+import { verificationTemplate } from "../mail/templates/verificationTemplate.js";
 
 export const signUp = async (req, res) => {
   const { name, email, password } = req.body;
@@ -32,39 +34,17 @@ export const signUp = async (req, res) => {
 
     await user.save();
 
-    // 3) JWT cookie — wrap to avoid killing the request if env is wrong
-    try {
-      if (!process.env.JWT_SECRET) {
-        throw new Error("Missing JWT_SECRET");
-      }
-      generateTokenAndSetCookie(res, user._id);
-    } catch (e) {
-      console.error("JWT error:", e);
-    }
+    generateTokenAndSetCookie(res, user._id);
 
-    (async () => {
-      try {
-        const html = baseTemplate({
-          title: "New sign-in to Movie Hub",
-          body: `
-            <h1>Hi${user.name ? `, ${user.name}` : ""}</h1>
-            <p>We noticed a new sign-in to your account just now.</p>
-            <p><a class="button" href="${
-              process.env.APP_URL
-            }">Open Movie Hub</a></p>
-          `,
-        });
-        await sendEmail({
-          to: user.email,
-          subject: "New sign-in to your account",
-          html,
-          text: "New sign-in to your account.",
-        });
-      } catch (e) {
-        console.error("Login email failed:", e?.response?.body || e);
-        // don’t throw; login should still succeed
-      }
-    })();
+    await sendEmail({
+      to: user.email,
+      subject: "Verification code",
+      html: verificationTemplate({
+        name: user.name,
+        code: verificationToken,
+      }),
+      text: "verify your email",
+    });
 
     res.status(201).json({
       message: "User created successfully",
@@ -78,6 +58,43 @@ export const signUp = async (req, res) => {
     res.status(500).json({ error: `Internal server error ${error.message}` });
   }
 };
+
+export const EmailVerification = async (req, res) => {
+  const { code } = req.body;
+  try {
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Invalid or expired code" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+
+    await user.save();
+    await sendEmail({
+      to: user.email,
+      subject: "Email Verification Successful",
+      html: welcomeTemplate({ name: user.name }),
+      text: "Your email has been verified successfully!",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      user: {
+        ...user._doc,
+        password: undefined, // don't send password back
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: `Internal server error ${error.message}` });
+  }
+};
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
