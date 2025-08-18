@@ -12,6 +12,7 @@ import {
 } from "@/pages/lazyPages";
 import { Suspense } from "react";
 import Index from "@/components/navbar/Index";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export const AppRoutes = () => {
   return (
@@ -26,7 +27,14 @@ export const AppRoutes = () => {
         <Route element={<Index />}>
           {/* //*Further Pages */}
           <Route path={path.home} element={<Home />} />
-          <Route path={path.about} element={<About />} />
+          <Route
+            path={path.about}
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
           <Route path={path.movies} element={<Movies />} />
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />

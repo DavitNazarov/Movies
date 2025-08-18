@@ -50,8 +50,9 @@ export const signUp = async (req, res) => {
       message: "User created successfully",
       success: true,
       user: {
-        ...user._doc,
+        ...user.toObject(),
         password: undefined,
+        imageUrl: user.imageUrl,
       },
     });
   } catch (error) {
@@ -86,8 +87,9 @@ export const EmailVerification = async (req, res) => {
       success: true,
       message: "Email verified successfully",
       user: {
-        ...user._doc,
+        ...user.toObject(),
         password: undefined, // don't send password back
+        imageUrl: user.imageUrl || "/avatars/default.jpg",
       },
     });
   } catch (error) {
@@ -124,9 +126,10 @@ export const login = async (req, res) => {
       user: {
         success: true,
         user: {
-          ...user._doc,
+          ...user.toObject(),
           password: undefined,
           verificationToken: undefined,
+          imageUrl: user.imageUrl,
         },
       },
     });

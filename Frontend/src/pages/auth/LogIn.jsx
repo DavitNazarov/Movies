@@ -1,14 +1,30 @@
-import OtherAuth from "@/components/auth/OtherAuth";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Image } from "@/components/ui/Image";
 import { Input } from "@/components/ui/input";
 import { path } from "@/constants/routes.const";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import OtherAuth from "@/components/auth/OtherAuth";
+import { useAuth } from "@/context/AuthContext";
 
 function LogIn() {
+  const { login, loading, error, clearError } = useAuth();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const nav = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(form.email, form.password);
+      nav("/"); // or wherever you want to land
+    } catch {
+      /* error is already in context */
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,7 +34,7 @@ function LogIn() {
     >
       <Card className="w-full overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form onSubmit={onSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back!</h1>
@@ -27,12 +43,25 @@ function LogIn() {
                 </p>
               </div>
 
+              {error && (
+                <div
+                  className="text-red-600 text-sm cursor-pointer"
+                  onClick={clearError}
+                >
+                  {error}
+                </div>
+              )}
+
               <div className="grid select-none gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, email: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -43,21 +72,26 @@ function LogIn() {
                   id="password"
                   type="password"
                   placeholder="••••••••"
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, password: e.target.value }))
+                  }
                   required
                 />
               </div>
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="w-full cursor-pointer select-none"
               >
-                Log In
+                {loading ? "Logging in..." : "Log In"}
               </Button>
 
               <OtherAuth />
 
               <div className="text-center text-sm">
-                have an account?{" "}
+                Don’t have an account?{" "}
                 <Link to={path.signUp} className="underline underline-offset-4">
                   Sign up
                 </Link>
@@ -76,11 +110,6 @@ function LogIn() {
           </div>
         </CardContent>
       </Card>
-
-      <div className="text-balance text-center text-xs text-muted-foreground *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div>
     </motion.div>
   );
 }

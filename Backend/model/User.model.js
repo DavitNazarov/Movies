@@ -4,7 +4,6 @@ export const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
   },
   email: {
     type: String,
@@ -18,8 +17,7 @@ export const UserSchema = new mongoose.Schema({
 
   imageUrl: {
     type: String,
-    default:
-      "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-transparent-600nw-2463868853.jpg",
+    default: "/avatars/default.jpg",
   },
   isVerified: {
     type: Boolean,

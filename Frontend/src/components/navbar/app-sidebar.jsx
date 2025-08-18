@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import { useAuth } from "@/context/AuthContext";
 import { NavMain } from "@/components/navbar/nav-main";
 import {
   Sidebar,
@@ -9,22 +8,26 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "../ui/nav-user";
 import NavSecondary from "@/components/ui/nav-secondary";
-import { data } from "./NavData";
+import { buildNavData } from "./NavData";
 
 export function AppSidebar({ ...props }) {
-  //! permanent state ( before real Auth system )
-  const [IsLoggedIn, setIsLoggedIn] = useState(false);
+  const { user } = useAuth(); // <-- real auth state
+  const nav = buildNavData(user); // <-- dynamic data
+  const isLoggedIn = !!user;
+
+  // optional: while hydrating session (if user === undefined in your context), render nothing or a slim loader
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent className="flex justify-center flex-col">
-        <NavMain items={data} />
+        <NavMain items={nav} />
       </SidebarContent>
+
       <SidebarFooter>
-        {/* User info */}
-        {IsLoggedIn && <NavUser user={data.user} />}
-        {/*Auth buttons  */}
-        {!IsLoggedIn && <NavSecondary items={data.authBtn} />}
+        {isLoggedIn && nav.user && <NavUser user={nav.user} />}
+        {!isLoggedIn && <NavSecondary items={nav.authBtn} />}
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
