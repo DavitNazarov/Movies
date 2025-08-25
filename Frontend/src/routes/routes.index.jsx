@@ -39,9 +39,9 @@ export const AppRoutes = () => {
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />
           <Route path={path.signUp} element={<SignUp />} />
-          {/*//* Not Found Page  */}
-          <Route path={path.notFound} element={<NotFound />} />
         </Route>
+        {/*//* Not Found Page  */}
+        <Route path={path.notFound} element={<NotFound />} />
       </Routes>
     </Suspense>
   );
