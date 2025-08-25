@@ -22,14 +22,15 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 
-// Replace your current /me with this:
 app.get("/api/auth/me", async (req, res) => {
   const token = req.cookies?.token;
   if (!token) return res.status(401).json({ error: "Unauthenticated" });
 
   try {
     const { userId } = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(userId).select("_id name email imageUrl");
+    const user = await User.findById(userId).select(
+      "_id name email imageUrl isAdmin isVerified"
+    ); // added fields
     if (!user) return res.status(401).json({ error: "Unauthenticated" });
     res.json({ user });
   } catch {

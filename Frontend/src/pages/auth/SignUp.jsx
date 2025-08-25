@@ -6,9 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Image } from "@/components/ui/Image";
 import { Input } from "@/components/ui/input";
 import { path } from "@/constants/routes.const";
-import { Label } from "@radix-ui/react-dropdown-menu";
+// FIX: use your UI Label, not radix dropdown-menu
+import { Label } from "@/components/ui/label";
 import OtherAuth from "@/components/auth/OtherAuth";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 function SignUp() {
   const { signUp, verifyEmail, loading, error, clearError } = useAuth();
@@ -21,16 +23,22 @@ function SignUp() {
     e.preventDefault();
     try {
       await signUp(form);
+      toast.success("Account created. Check your email for the 6-digit code.");
       setStep("verify");
-    } catch {}
+    } catch (err) {
+      toast.error(err?.message || "Sign up failed");
+    }
   };
 
   const onVerify = async (e) => {
     e.preventDefault();
     try {
       await verifyEmail(code);
+      toast.success("Email verified. You’re in.");
       nav("/");
-    } catch {}
+    } catch (err) {
+      toast.error(err?.message || "Verification failed");
+    }
   };
 
   if (step === "verify") {
@@ -48,12 +56,21 @@ function SignUp() {
             {error}
           </div>
         )}
+
         <Input
           placeholder="Enter 6-digit code"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => {
+            if (error) clearError();
+            setCode(e.target.value);
+          }}
           required
         />
+        <p className="text-sm text-muted-foreground">
+          If you entered a mail.ru or other non-gmail address, you might receive
+          the code. In case you don't receive it, just forget it due to sandbox
+          restrictions.
+        </p>
         <Button type="submit" disabled={loading}>
           {loading ? "Verifying..." : "Verify"}
         </Button>
@@ -81,15 +98,6 @@ function SignUp() {
                 </p>
               </div>
 
-              {error && (
-                <div
-                  className="text-red-600 text-sm cursor-pointer"
-                  onClick={clearError}
-                >
-                  {error}
-                </div>
-              )}
-
               <div className="grid gap-3">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -110,9 +118,10 @@ function SignUp() {
                   type="email"
                   placeholder="m@example.com"
                   value={form.email}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, email: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    if (error) clearError();
+                    setForm((s) => ({ ...s, email: e.target.value }));
+                  }}
                   required
                 />
               </div>
@@ -124,9 +133,10 @@ function SignUp() {
                   type="password"
                   placeholder="••••••••"
                   value={form.password}
-                  onChange={(e) =>
-                    setForm((s) => ({ ...s, password: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    if (error) clearError();
+                    setForm((s) => ({ ...s, password: e.target.value }));
+                  }}
                   required
                 />
               </div>

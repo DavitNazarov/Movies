@@ -24,7 +24,7 @@ export function AppSidebar({ ...props }) {
       </SidebarContent>
 
       <SidebarFooter>
-        {isLoggedIn && nav.user && <NavUser user={nav.user} />}
+        {isLoggedIn && nav.user && <NavUser userInfo={nav.user} />}
         {!isLoggedIn && <NavSecondary items={nav.authBtn} />}
       </SidebarFooter>
 

@@ -9,6 +9,7 @@ import { path } from "@/constants/routes.const";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import OtherAuth from "@/components/auth/OtherAuth";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 function LogIn() {
   const { login, loading, error, clearError } = useAuth();
@@ -19,9 +20,10 @@ function LogIn() {
     e.preventDefault();
     try {
       await login(form.email, form.password);
-      nav("/"); // or wherever you want to land
-    } catch {
-      /* error is already in context */
+      toast.success("Logged in successfully");
+      nav("/");
+    } catch (err) {
+      toast.error(err?.message || "Login failed");
     }
   };
 
@@ -42,15 +44,6 @@ function LogIn() {
                   Log in to your account
                 </p>
               </div>
-
-              {error && (
-                <div
-                  className="text-red-600 text-sm cursor-pointer"
-                  onClick={clearError}
-                >
-                  {error}
-                </div>
-              )}
 
               <div className="grid select-none gap-3">
                 <Label htmlFor="email">Email</Label>

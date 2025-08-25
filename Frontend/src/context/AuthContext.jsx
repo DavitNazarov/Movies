@@ -77,8 +77,10 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const { data } = await api.post("/api/auth/login", { email, password });
-      setUser(data.user);
-      return data;
+      // flatten nested structure
+      const loggedUser = data.user?.user || data.user;
+      setUser(loggedUser);
+      return loggedUser;
     } catch (e) {
       const msg = getErr(e);
       setError(msg);
@@ -87,7 +89,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
-
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");

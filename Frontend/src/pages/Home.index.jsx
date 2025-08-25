@@ -1,7 +1,13 @@
+import { useAuth } from "@/context/AuthContext";
 import React from "react";
 
 const Home = () => {
-  return <div>Home</div>;
+  const { user } = useAuth();
+  return (
+    <div className="flex align-center justify-center h-screen">
+      welcome {user ? user.name : ""}, to MovieDB
+    </div>
+  );
 };
 
 export default Home;
