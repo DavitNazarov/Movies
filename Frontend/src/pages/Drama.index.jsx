@@ -1,9 +1,9 @@
-import MoviesList from "@/components/movies/MoviesList";
-import { useAllMovies } from "@/hooks/useMovies";
+import { useDramaMovies } from "@/hooks/useMovies";
+import MoviesList from "../components/movies/MoviesList";
 
-const Movies = () => {
+const Drama = () => {
   const { movies, page, setPage, totalPages, loading, err, windowPages } =
-    useAllMovies(1);
+    useDramaMovies(1);
 
   return (
     <MoviesList
@@ -14,8 +14,9 @@ const Movies = () => {
       loading={loading}
       err={err}
       windowPages={windowPages}
+      genre="Drama"
     />
   );
 };
 
-export default Movies;
+export default Drama;

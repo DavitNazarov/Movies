@@ -6,6 +6,7 @@ import {
   About,
   Home,
   Movies,
+  Drama,
   LogIn,
   SignUp,
   NotFound,
@@ -13,6 +14,7 @@ import {
 import { Suspense } from "react";
 import Index from "@/components/navbar/Index";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import Fiction from "@/pages/Fiction.index";
 
 export const AppRoutes = () => {
   return (
@@ -27,18 +29,14 @@ export const AppRoutes = () => {
         <Route element={<Index />}>
           {/* //*Further Pages */}
           <Route path={path.home} element={<Home />} />
-          <Route
-            path={path.about}
-            element={
-              <ProtectedRoute>
-                <About />
-              </ProtectedRoute>
-            }
-          />
+          <Route path={path.about} element={<About />} />
           <Route path={path.movies} element={<Movies />} />
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />
           <Route path={path.signUp} element={<SignUp />} />
+          {/* pages */}
+          <Route path={path.drama} element={<Drama />} />
+          <Route path={path.fiction} element={<Fiction />} />
         </Route>
         {/*//* Not Found Page  */}
         <Route path={path.notFound} element={<NotFound />} />

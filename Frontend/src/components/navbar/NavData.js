@@ -20,8 +20,8 @@ export function buildNavData(user) {
         icon: Clapperboard,
         items: [
           { title: "Movies", url: path.movies },
-          { title: "Drama", url: path.movieDetail },
-          { title: "Fiction", url: "#" },
+          { title: "Drama", url: path.drama },
+          { title: "Fiction", url: path.fiction },
           { title: "More", url: "#" },
         ],
       },

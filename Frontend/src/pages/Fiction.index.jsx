@@ -1,10 +1,10 @@
 import MoviesList from "@/components/movies/MoviesList";
-import { useAllMovies } from "@/hooks/useMovies";
+import { useFictionMovies } from "@/hooks/useMovies";
+import React from "react";
 
-const Movies = () => {
+const Fiction = () => {
   const { movies, page, setPage, totalPages, loading, err, windowPages } =
-    useAllMovies(1);
-
+    useFictionMovies();
   return (
     <MoviesList
       movies={movies}
@@ -14,8 +14,9 @@ const Movies = () => {
       loading={loading}
       err={err}
       windowPages={windowPages}
+      genre="Fiction"
     />
   );
 };
 
-export default Movies;
+export default Fiction;
