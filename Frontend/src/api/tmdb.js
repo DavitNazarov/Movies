@@ -54,3 +54,19 @@ export async function fetchFictionMovies(page = 1) {
   });
   return data; // { results, total_pages, ... }
 }
+
+export async function fetchSearchMovies(query, page = 1) {
+  const { data } = await api.get("/search/movie", {
+    params: {
+      include_video: true,
+      include_adult: true,
+      language: "en-GB",
+      page, // 1..500
+      query,
+      with_origin_country: "US",
+    },
+  });
+  console.log(data);
+
+  return data; // { results, total_pages, ... }
+}

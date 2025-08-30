@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 
 import {
@@ -14,12 +15,30 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Input } from "../ui/input";
+import { path } from "@/constants/routes.const";
 
 export function NavMain({ items }) {
+  const [value, setValue] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const q = value.trim();
+    navigate(q ? `${path.search}?q=${encodeURIComponent(q)}` : path.search);
+  };
+
   return (
     <SidebarGroup>
       <SidebarMenu className="gap-5">
+        <form onSubmit={handleSubmit}>
+          <Input
+            placeholder="Search Movie..."
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </form>
         {items.mainLinks.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild tooltip={item.name}>

@@ -2,20 +2,20 @@ import { path } from "@/constants/routes.const";
 import { Route, Routes } from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
 
+import { Suspense } from "react";
+import Index from "@/components/navbar/Index";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import {
   About,
   Home,
   Movies,
   Drama,
+  More,
+  Fiction,
   LogIn,
   SignUp,
   NotFound,
 } from "@/pages/lazyPages";
-import { Suspense } from "react";
-import Index from "@/components/navbar/Index";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Fiction from "@/pages/Fiction.index";
-
 export const AppRoutes = () => {
   return (
     <Suspense
@@ -37,6 +37,7 @@ export const AppRoutes = () => {
           {/* pages */}
           <Route path={path.drama} element={<Drama />} />
           <Route path={path.fiction} element={<Fiction />} />
+          <Route path={path.search} element={<More />} />
         </Route>
         {/*//* Not Found Page  */}
         <Route path={path.notFound} element={<NotFound />} />

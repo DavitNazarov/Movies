@@ -22,7 +22,7 @@ export function buildNavData(user) {
           { title: "Movies", url: path.movies },
           { title: "Drama", url: path.drama },
           { title: "Fiction", url: path.fiction },
-          { title: "More", url: "#" },
+          { title: "More", url: path.search },
         ],
       },
     ],

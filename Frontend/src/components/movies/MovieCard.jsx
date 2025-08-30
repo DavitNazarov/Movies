@@ -2,6 +2,12 @@ import { motion } from "framer-motion";
 import { IMG } from "@/utils/img";
 
 export default function MovieCard({ m }) {
+  const imgSrc = m.poster_path
+    ? IMG(m.poster_path)
+    : m.backdrop_path
+    ? IMG(m.backdrop_path)
+    : null;
+
   return (
     <motion.article
       layout
@@ -9,12 +15,14 @@ export default function MovieCard({ m }) {
       className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="relative">
-        <img
-          src={IMG(m.poster_path) || IMG(m.backdrop_path)}
-          alt={m.title}
-          loading="lazy"
-          className="aspect-[2/3] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-        />
+        {imgSrc && (
+          <img
+            src={imgSrc}
+            alt={m.title || "No poster"}
+            loading="lazy"
+            className="aspect-[2/3] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+        )}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
       <div className="p-3">

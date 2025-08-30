@@ -26,7 +26,6 @@ export const BreadCrumb = () => {
     setSegment1(pathSegments[0] || "Home");
     setSegment2(pathSegments[1] || "");
   }, [location]);
-  console.log(segment1);
 
   return (
     <Breadcrumb>

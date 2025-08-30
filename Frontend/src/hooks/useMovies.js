@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchMovies, fetchDramaMovies, fetchFictionMovies } from "@/api/tmdb";
+import {
+  fetchMovies,
+  fetchDramaMovies,
+  fetchFictionMovies,
+  fetchSearchMovies,
+} from "@/api/tmdb";
 import { getWindowPages } from "@/utils/windowPages";
 
-export function useAllMovies(initialPage = 1) {
+export function useAllMovies(initialPage = 1, { enabled = true } = {}) {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
@@ -10,6 +15,7 @@ export function useAllMovies(initialPage = 1) {
   const [err, setErr] = useState("");
 
   useEffect(() => {
+    if (!enabled) return; // keep deps stable, gate inside
     window.scrollTo({ top: 0, behavior: "smooth" });
     let canceled = false;
     setLoading(true);
@@ -30,7 +36,7 @@ export function useAllMovies(initialPage = 1) {
     return () => {
       canceled = true;
     };
-  }, [page]);
+  }, [page, enabled]); // fixed-length deps
 
   const windowPages = useMemo(
     () => getWindowPages(page, totalPages, 5),
@@ -111,5 +117,53 @@ export function useFictionMovies(initialPage = 1) {
     () => getWindowPages(page, totalPages, 5),
     [page, totalPages]
   );
+  return { movies, page, setPage, totalPages, loading, err, windowPages };
+}
+
+export function useSearchMovies(query, initialPage = 1) {
+  const q = String(query ?? "").trim(); // normalise
+  const [movies, setMovies] = useState([]);
+  const [page, setPage] = useState(initialPage);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    setPage(initialPage);
+  }, [q, initialPage]);
+
+  useEffect(() => {
+    if (!q) {
+      setMovies([]);
+      setTotalPages(1);
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    let canceled = false;
+    setLoading(true);
+    setErr("");
+    fetchSearchMovies(q, page)
+      .then((data) => {
+        if (canceled) return;
+        setMovies(data?.results ?? []);
+        setTotalPages(Math.min(data?.total_pages ?? 1, 500));
+      })
+      .catch((e) => {
+        if (canceled) return;
+        setErr(e?.message || "Failed to load");
+        setMovies([]);
+        setTotalPages(1);
+      })
+      .finally(() => !canceled && setLoading(false));
+    return () => {
+      canceled = true;
+    };
+  }, [q, page]); // fixed-length deps
+
+  const windowPages = useMemo(
+    () => getWindowPages(page, totalPages, 5),
+    [page, totalPages]
+  );
+
   return { movies, page, setPage, totalPages, loading, err, windowPages };
 }
