@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 import { BreadCrumb } from "../ui/BreadCrumb.index";
+import { ScrollArea } from "../ui/scroll-area";
 
 const Index = () => {
   return (
@@ -21,9 +22,11 @@ const Index = () => {
           <BreadCrumb />
         </header>
 
-        <section>
-          <Outlet />
-        </section>
+        <ScrollArea className="h-[calc(100dvh-4rem)] w-full">
+          <section>
+            <Outlet />
+          </section>
+        </ScrollArea>
       </SidebarInset>
     </SidebarProvider>
   );

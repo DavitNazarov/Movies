@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -14,14 +13,23 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
 import { path } from "@/constants/routes.const";
+import { useCallback } from "react";
 
 export function NavMain({ items }) {
   const [value, setValue] = useState("");
   const navigate = useNavigate();
+  const { toggleSidebar } = useSidebar();
+  const { isMobile, setOpen, setOpenMobile } = useSidebar();
+
+  const openSidebar = useCallback(() => {
+    if (isMobile) setOpenMobile(true);
+    else setOpen(true);
+  }, [isMobile, setOpen, setOpenMobile]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,11 +40,13 @@ export function NavMain({ items }) {
   return (
     <SidebarGroup>
       <SidebarMenu className="gap-5">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onClick={() => toggleSidebar}>
           <Input
             placeholder="Search Movie..."
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            onFocus={openSidebar}
+            onClick={openSidebar}
           />
         </form>
         {items.mainLinks.map((item) => (

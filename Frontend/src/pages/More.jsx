@@ -1,4 +1,3 @@
-// More.jsx (the /search page)
 import { useSearchParams } from "react-router-dom";
 import { useAllMovies, useSearchMovies } from "@/hooks/useMovies";
 import MoviesList from "@/components/movies/MoviesList";
