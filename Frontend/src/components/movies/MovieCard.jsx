@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { IMG } from "@/utils/img";
 
-export default function MovieCard({ m }) {
+export default function MovieCard({ m, onSelect }) {
   const imgSrc = m.poster_path
     ? IMG(m.poster_path)
     : m.backdrop_path
@@ -13,6 +13,10 @@ export default function MovieCard({ m }) {
       layout
       whileHover={{ y: -4 }}
       className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+      onClick={() => {
+        console.log("Selected movie ID:", m.id);
+        onSelect(m.id);
+      }}
     >
       <div className="relative">
         {imgSrc && (

@@ -4,6 +4,7 @@ import {
   fetchDramaMovies,
   fetchFictionMovies,
   fetchSearchMovies,
+  fetchMoviesById,
 } from "@/api/tmdb";
 import { getWindowPages } from "@/utils/windowPages";
 
@@ -166,4 +167,34 @@ export function useSearchMovies(query, initialPage = 1) {
   );
 
   return { movies, page, setPage, totalPages, loading, err, windowPages };
+}
+
+export function useMoviesById(id) {
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    let canceled = false;
+    setLoading(true);
+    setErr("");
+    fetchMoviesById(id)
+      .then((data) => {
+        if (canceled) return;
+        setMovie(data); // full object from TMDB
+      })
+      .catch((e) => {
+        if (canceled) return;
+        setErr(e?.message || "Failed to load");
+        setMovie(null);
+      })
+      .finally(() => !canceled && setLoading(false));
+    return () => {
+      canceled = true;
+    };
+  }, [id]);
+
+  return { movie, loading, err };
 }

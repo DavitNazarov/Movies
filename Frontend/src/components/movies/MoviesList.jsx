@@ -1,7 +1,9 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import MovieGrid from "@/components/movies/MovieGrid";
 import Pagination from "@/components/movies/Pagination";
 import { path } from "@/constants/routes.const";
-import { Link } from "react-router-dom";
+import { useMoviesById } from "@/hooks/useMovies";
 
 export default function MoviesList({
   movies,
@@ -14,6 +16,18 @@ export default function MoviesList({
   err,
   windowPages,
 }) {
+  const navigation = useNavigate();
+  const [selectedId, setSelectedId] = useState(null);
+  const {
+    movie,
+    loading: movieLoading,
+    err: movieErr,
+  } = useMoviesById(selectedId);
+  console.log(movie);
+
+  if (selectedId) {
+    navigation(`/movies/${selectedId}`);
+  }
   const inSearchMode = typeof search === "string"; // search input   passes a string
   const hasQuery = inSearchMode && search.trim() !== "";
 
@@ -22,6 +36,7 @@ export default function MoviesList({
       ? `Search Results for “${search}”`
       : "Search for a movie"
     : `Popular ${genre} Films`;
+
   return (
     <div className="min-h-screen bg-white text-black dark:bg-zinc-950 dark:text-zinc-100">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -64,7 +79,12 @@ export default function MoviesList({
           </div>
         ) : (
           <>
-            <MovieGrid movies={movies} loading={loading} page={page} />
+            <MovieGrid
+              movies={movies}
+              loading={loading}
+              page={page}
+              onSelect={setSelectedId}
+            />
             <Pagination
               page={page}
               totalPages={totalPages}

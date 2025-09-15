@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import MovieCard from "./MovieCard";
 
-export default function MovieGrid({ movies, loading, page }) {
+export default function MovieGrid({ movies, loading, page, onSelect }) {
   if (loading) {
     return (
       <motion.div
@@ -32,7 +32,7 @@ export default function MovieGrid({ movies, loading, page }) {
         className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 cursor-pointer"
       >
         {movies.map((m) => (
-          <MovieCard key={m.id} m={m} />
+          <MovieCard key={m.id} m={m} onSelect={onSelect} />
         ))}
       </motion.div>
     </AnimatePresence>

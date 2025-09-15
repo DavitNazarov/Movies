@@ -26,6 +26,7 @@ export function NavMain({ items }) {
   const { toggleSidebar } = useSidebar();
   const { isMobile, setOpen, setOpenMobile } = useSidebar();
 
+  // open sidebar
   const openSidebar = useCallback(() => {
     if (isMobile) setOpenMobile(true);
     else setOpen(true);
@@ -65,6 +66,8 @@ export function NavMain({ items }) {
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible"
+            onFocus={openSidebar}
+            onClick={openSidebar}
           >
             <SidebarMenuItem className="cursor-pointer">
               <CollapsibleTrigger asChild>

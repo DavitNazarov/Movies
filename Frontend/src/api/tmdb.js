@@ -70,3 +70,12 @@ export async function fetchSearchMovies(query, page = 1) {
 
   return data; // { results, total_pages, ... }
 }
+export async function fetchMoviesById(id) {
+  const { data } = await api.get(`/movie/${id}`, {
+    params: {
+      include_video: true,
+    },
+  });
+
+  return data; // { results, total_pages, ... }
+}

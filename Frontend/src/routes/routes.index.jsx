@@ -9,6 +9,7 @@ import {
   About,
   Home,
   Movies,
+  MovieDetail,
   Drama,
   More,
   Fiction,
@@ -31,6 +32,7 @@ export const AppRoutes = () => {
           <Route path={path.home} element={<Home />} />
           <Route path={path.about} element={<About />} />
           <Route path={path.movies} element={<Movies />} />
+          <Route path={`${path.movies}/:id`} element={<MovieDetail />} />
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />
           <Route path={path.signUp} element={<SignUp />} />
