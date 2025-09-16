@@ -74,6 +74,24 @@ export async function fetchMoviesById(id) {
   const { data } = await api.get(`/movie/${id}`, {
     params: {
       include_video: true,
+      append_to_response: "videos",
+    },
+  });
+
+  return data; // { results, total_pages, ... }
+}
+export async function fetchMoviesByGenre(genreId, page = 1) {
+  if (!genreId) throw new Error("Missing genreId");
+
+  const { data } = await api.get("/discover/movie", {
+    params: {
+      include_video: true,
+      include_adult: false,
+      language: "en-GB",
+      certification_lte: "PG-13",
+      with_origin_country: "US",
+      with_genres: genreId,
+      sort_by: "popularity.desc",
     },
   });
 
