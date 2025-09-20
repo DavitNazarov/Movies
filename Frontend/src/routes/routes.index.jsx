@@ -1,10 +1,9 @@
-import { path } from "@/constants/routes.const";
-import { Route, Routes } from "react-router-dom";
-import { ScaleLoader } from "react-spinners";
-
 import { Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import Loading from "@/components/ui/Loading";
+import { path } from "@/constants/routes.const";
 import Index from "@/components/navbar/Index";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+// import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import {
   About,
   Home,
@@ -17,15 +16,10 @@ import {
   SignUp,
   NotFound,
 } from "@/pages/lazyPages";
+
 export const AppRoutes = () => {
   return (
-    <Suspense
-      fallback={
-        <div className="text-center p-10">
-          <ScaleLoader />
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading />}>
       <Routes>
         <Route element={<Index />}>
           {/* //*Further Pages */}
