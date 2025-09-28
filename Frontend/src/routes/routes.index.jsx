@@ -3,19 +3,21 @@ import { Route, Routes } from "react-router-dom";
 import Loading from "@/components/ui/Loading";
 import { path } from "@/constants/routes.const";
 import Index from "@/components/navbar/Index";
-// import ProtectedRoute from "@/components/auth/ProtectedRoute";
+// import ProtectedRoute from "@/components/auth/ProtectedRoute"; this function is not used currently due I'm being  lazy
 import {
   About,
   Home,
   Movies,
   MovieDetail,
   Drama,
+  Dashboard,
   More,
   Fiction,
   LogIn,
   SignUp,
   NotFound,
 } from "@/pages/lazyPages";
+import AdminRoute from "@/components/auth/AdminRoute";
 
 export const AppRoutes = () => {
   return (
@@ -34,6 +36,15 @@ export const AppRoutes = () => {
           <Route path={path.drama} element={<Drama />} />
           <Route path={path.fiction} element={<Fiction />} />
           <Route path={path.search} element={<More />} />
+          {/* Admin */}
+          <Route
+            path={path.admin}
+            element={
+              <AdminRoute>
+                <Dashboard />
+              </AdminRoute>
+            }
+          />
         </Route>
         {/*//* Not Found Page  */}
         <Route path={path.notFound} element={<NotFound />} />

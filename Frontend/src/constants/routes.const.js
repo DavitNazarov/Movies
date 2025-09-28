@@ -7,6 +7,8 @@ export const path = {
   fiction: "/fiction",
   search: "/search",
 
+  admin: "/dashboard",
+
   logIn: "/logIn",
   signUp: "/signup",
 

@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { path } from "@/constants/routes.const";
 
 export function NavUser({ userInfo }) {
   const { logout, user } = useAuth();
@@ -74,9 +76,11 @@ export function NavUser({ userInfo }) {
             <DropdownMenuSeparator />
 
             {user.isAdmin && (
-              <DropdownMenuItem className="cursor-pointer">
-                <LayoutDashboard /> Dashboard
-              </DropdownMenuItem>
+              <Link to={path.admin}>
+                <DropdownMenuItem className="cursor-pointer">
+                  <LayoutDashboard /> Dashboard
+                </DropdownMenuItem>
+              </Link>
             )}
             <DropdownMenuItem
               className="cursor-pointer"

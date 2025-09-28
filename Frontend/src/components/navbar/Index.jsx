@@ -10,6 +10,7 @@ import {
 import { Outlet } from "react-router-dom";
 import { BreadCrumb } from "../ui/BreadCrumb.index";
 import { ScrollArea } from "../ui/scroll-area";
+import Footer from "../ui/Footer";
 
 const Index = () => {
   return (
@@ -26,6 +27,7 @@ const Index = () => {
           <section>
             <Outlet />
           </section>
+          <Footer />
         </ScrollArea>
       </SidebarInset>
     </SidebarProvider>

@@ -5,7 +5,8 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import authRoutes from "./routes/auth.route.js";
 import { connectDB } from "./db/connectDB.js";
-import { User } from "./model/User.model.js"; // <-- add
+import { User } from "./model/User.model.js";
+import usersRouter from "./routes/users.route.js";
 
 dotenv.config();
 const app = express();
@@ -21,7 +22,7 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
-
+app.use("/api/users", usersRouter);
 app.get("/api/auth/me", async (req, res) => {
   const token = req.cookies?.token;
   if (!token) return res.status(401).json({ error: "Unauthenticated" });

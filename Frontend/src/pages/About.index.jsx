@@ -1,8 +1,12 @@
+import MovieRowRender from "@/components/movies/MovieRowRender";
+import MoviesSimilar from "@/components/movies/MoviesSimilar";
+import { useMoviesSlider } from "@/hooks/useMovies";
 import { motion } from "framer-motion";
 
 export default function AboutApp() {
   const repoUrl = "https://github.com/DavitNazarov/Movies";
 
+  const { popular, drama, fiction, loading } = useMoviesSlider();
   const features = [
     "Browse popular films with pagination",
     "Responsive grid cards with posters and ratings",

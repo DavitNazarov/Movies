@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import MovieCard from "./MovieCard";
+import MovieCard from "./MovieCard.index";
 
 export default function MovieGrid({ movies, loading, page, onSelect }) {
   if (loading) {

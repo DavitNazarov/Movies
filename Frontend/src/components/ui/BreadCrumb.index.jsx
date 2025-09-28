@@ -26,12 +26,13 @@ export const BreadCrumb = () => {
     setSegment1(pathSegments[0] || "Home");
     setSegment2(pathSegments[1] || "");
   }, [location]);
+  console.log(segment1, location.pathname);
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem className="hidden md:block">
-          <Link to={location.pathname}>{segment1}</Link>
+          <Link to={location.pathname.split("/")[1]}>{segment1}</Link>
         </BreadcrumbItem>
         {segment2 && (
           <>

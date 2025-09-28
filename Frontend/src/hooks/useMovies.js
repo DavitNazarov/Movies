@@ -245,3 +245,27 @@ export function useMoviesByGenre(
 
   return { movies, page, setPage, totalPages, loading, err, windowPages };
 }
+export function useMoviesSlider(initialPage = 1) {
+  const [popular, setPopular] = useState([]);
+  const [drama, setDrama] = useState([]);
+  const [fiction, setFiction] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadMovies() {
+      setLoading(true);
+      const [popData, dramaData, fictionData] = await Promise.all([
+        fetchMovies(),
+        fetchDramaMovies(),
+        fetchFictionMovies(),
+      ]);
+      setPopular(popData.results);
+      setDrama(dramaData.results);
+      setFiction(fictionData.results);
+      setLoading(false);
+    }
+
+    loadMovies();
+  }, []);
+  return { popular, drama, fiction, loading };
+}
