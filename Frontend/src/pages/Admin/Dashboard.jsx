@@ -7,7 +7,7 @@ import {
   TableHead,
   TableCell,
   TableCaption,
-} from "@/components/ui/Table";
+} from "@/components/ui/table";
 import { api, getErr } from "@/lib/api";
 import Loading from "@/components/ui/Loading";
 

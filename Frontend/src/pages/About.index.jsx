@@ -1,5 +1,3 @@
-import MovieRowRender from "@/components/movies/MovieRowRender";
-import MoviesSimilar from "@/components/movies/MoviesSimilar";
 import { useMoviesSlider } from "@/hooks/useMovies";
 import { motion } from "framer-motion";
 

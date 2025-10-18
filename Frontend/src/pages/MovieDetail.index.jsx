@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useMoviesById, useMoviesByGenre } from "@/hooks/useMovies";
 import Loading from "@/components/ui/Loading";
