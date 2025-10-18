@@ -1,7 +1,14 @@
 import axios from "axios";
 
+// Detect if we're running on Render (production)
+const baseURL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname.includes("onrender.com")
+    ? "https://moviedb-ch39.onrender.com"
+    : "http://localhost:5000");
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL,
   withCredentials: true,
 });
 
