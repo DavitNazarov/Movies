@@ -51,7 +51,7 @@ app.get("/api/auth/me", async (req, res) => {
 // ===== Serve React build =====
 app.use(express.static(path.join(__dirname, "dist")));
 
-app.get("*", (_, res) => {
+app.get("(.*)", (_, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
