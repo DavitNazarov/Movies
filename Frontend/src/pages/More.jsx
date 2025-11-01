@@ -5,10 +5,13 @@ import MoviesList from "@/components/movies/MoviesList";
 export default function SearchPage() {
   const [params] = useSearchParams();
   const q = (params.get("q") || "").trim();
+  const hasQuery = q.length > 0;
 
-  const state = q ? useSearchMovies(q, 1) : useAllMovies(1);
+  const allMoviesState = useAllMovies(1, { enabled: !hasQuery });
+  const searchMoviesState = useSearchMovies(q, 1, { enabled: hasQuery });
+
   const { movies, page, setPage, totalPages, loading, err, windowPages } =
-    state;
+    hasQuery ? searchMoviesState : allMoviesState;
 
   return (
     <MoviesList

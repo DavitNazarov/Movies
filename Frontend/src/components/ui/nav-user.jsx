@@ -75,6 +75,12 @@ export function NavUser({ userInfo }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
+            <Link to={path.profile}>
+              <DropdownMenuItem className="cursor-pointer">
+                <BadgeCheck /> Profile
+              </DropdownMenuItem>
+            </Link>
+
             {user.isAdmin && (
               <Link to={path.admin}>
                 <DropdownMenuItem className="cursor-pointer">

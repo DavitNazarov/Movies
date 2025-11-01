@@ -13,7 +13,7 @@ import { buildNavData } from "./NavData";
 export function AppSidebar({ ...props }) {
   const { user } = useAuth(); // <-- real auth state
   const nav = buildNavData(user); // <-- dynamic data
-  const isLoggedIn = !!user;
+  const isLoggedIn = Boolean(user?._id || user?.id);
 
   // optional: while hydrating session (if user === undefined in your context), render nothing or a slim loader
 

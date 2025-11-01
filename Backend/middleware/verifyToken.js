@@ -15,7 +15,7 @@ export const verifyToken = async (req, res, next) => {
 
     // Fetch user from DB
     const user = await User.findById(decoded.userId).select(
-      "_id name email isAdmin isVerified"
+      "_id name email imageUrl isAdmin isVerified"
     );
     if (!user)
       return res.status(401).json({ success: false, message: "Unauthorized" });

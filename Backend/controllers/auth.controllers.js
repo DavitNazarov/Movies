@@ -2,9 +2,15 @@ import { User } from "../model/User.model.js";
 import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateTokenAndSetCookie.js";
 import { sendEmail } from "../mail/sendEmail.js";
-import { baseTemplate } from "../mail/templates/base.js";
 import { welcomeTemplate } from "../mail/templates/welcome.js";
 import { verificationTemplate } from "../mail/templates/verificationTemplate.js";
+
+const isProduction = process.env.NODE_ENV === "production";
+const cookieConfig = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
 
 export const signUp = async (req, res) => {
   const { name, email, password } = req.body;
@@ -137,7 +143,22 @@ export const login = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const logout = async (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({ message: "Logged out successfully" });
+  res.cookie("token", "", {
+    ...cookieConfig,
+    expires: new Date(0),
+  });
+  res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
+export const getMe = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  res.json({
+    success: true,
+    user: req.user,
+  });
 };

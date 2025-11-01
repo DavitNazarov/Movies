@@ -8,6 +8,7 @@ export const path = {
   search: "/search",
 
   admin: "/dashboard",
+  profile: "/profile",
 
   logIn: "/logIn",
   signUp: "/signup",

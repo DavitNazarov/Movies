@@ -122,7 +122,11 @@ export function useFictionMovies(initialPage = 1) {
   return { movies, page, setPage, totalPages, loading, err, windowPages };
 }
 
-export function useSearchMovies(query, initialPage = 1) {
+export function useSearchMovies(
+  query,
+  initialPage = 1,
+  { enabled = true } = {}
+) {
   const q = String(query ?? "").trim(); // normalise
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(initialPage);
@@ -135,9 +139,18 @@ export function useSearchMovies(query, initialPage = 1) {
   }, [q, initialPage]);
 
   useEffect(() => {
+    if (!enabled) {
+      setMovies([]);
+      setTotalPages(1);
+      setErr("");
+      setLoading(false);
+      return;
+    }
     if (!q) {
       setMovies([]);
       setTotalPages(1);
+      setErr("");
+      setLoading(false);
       return;
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -160,7 +173,7 @@ export function useSearchMovies(query, initialPage = 1) {
     return () => {
       canceled = true;
     };
-  }, [q, page]); // fixed-length deps
+  }, [q, page, enabled]); // fixed-length deps
 
   const windowPages = useMemo(
     () => getWindowPages(page, totalPages, 5),

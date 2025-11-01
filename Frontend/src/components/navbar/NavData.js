@@ -2,12 +2,13 @@ import { path } from "@/constants/routes.const";
 import { House, Clapperboard, Users, LogIn, IdCard } from "lucide-react";
 
 export function buildNavData(user) {
-  const isAuthed = !!user;
+  const userId = user?._id || user?.id;
+  const isAuthed = Boolean(userId);
 
   return {
     user: isAuthed
       ? {
-          name: user.name ?? "User",
+          name: user.name || user.username || "User",
           email: user.email ?? "",
           avatar: user.imageUrl ?? "/avatars/default.jpg",
         }

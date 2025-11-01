@@ -92,10 +92,11 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
-      setUser(null);
-      // optional: navigate("/login")
     } catch (err) {
       console.error("Logout failed:", err);
+      throw err;
+    } finally {
+      setUser(null);
     }
   };
   const refreshMe = async () => {

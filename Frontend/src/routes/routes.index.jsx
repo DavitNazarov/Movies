@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Loading from "@/components/ui/Loading";
 import { path } from "@/constants/routes.const";
 import Index from "@/components/navbar/Index";
-// import ProtectedRoute from "@/components/auth/ProtectedRoute"; this function is not used currently due I'm being  lazy
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import {
   About,
   Home,
@@ -16,6 +16,7 @@ import {
   LogIn,
   SignUp,
   NotFound,
+  Profile,
 } from "@/pages/lazyPages";
 import AdminRoute from "@/components/auth/AdminRoute";
 
@@ -32,6 +33,14 @@ export const AppRoutes = () => {
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />
           <Route path={path.signUp} element={<SignUp />} />
+          <Route
+            path={path.profile}
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           {/* pages */}
           <Route path={path.drama} element={<Drama />} />
           <Route path={path.fiction} element={<Fiction />} />

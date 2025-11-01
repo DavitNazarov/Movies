@@ -41,7 +41,7 @@ export function NavMain({ items }) {
   return (
     <SidebarGroup>
       <SidebarMenu className="gap-5">
-        <form onSubmit={handleSubmit} onClick={() => toggleSidebar}>
+        <form onSubmit={handleSubmit} onClick={toggleSidebar}>
           <Input
             placeholder="Search Movie..."
             value={value}
