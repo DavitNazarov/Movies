@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateTokenAndSetCookie.js";
 import { sendEmail } from "../mail/sendEmail.js";
 import { welcomeTemplate } from "../mail/templates/welcome.js";
-import { verificationTemplate } from "../mail/templates/verificationTemplate.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 const cookieConfig = {
@@ -26,34 +25,30 @@ export const signUp = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      verificationToken: verificationToken,
-      verificationTokenExpiresAt: Date.now() + 3600000, // 1 hour
+      isVerified: true,
     });
 
     await user.save();
 
     generateTokenAndSetCookie(res, user._id);
 
-    await sendEmail({
-      to: user.email,
-      subject: "Verification code",
-      html: verificationTemplate({
-        name: user.name,
-        code: verificationToken,
-      }),
-      text: "verify your email",
-    });
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Welcome to Movie Hub",
+        html: welcomeTemplate({ name: user.name }),
+        text: "Welcome to Movie Hub!",
+        category: "auth-welcome",
+      });
+    } catch (emailError) {
+      console.error("Failed to send welcome email", emailError);
+    }
 
     res.status(201).json({
-      message: "User created successfully",
       success: true,
       user: {
         ...user.toObject(),
@@ -62,6 +57,13 @@ export const signUp = async (req, res) => {
       },
     });
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ error: "User already exists" });
+    }
+    if (error?.name === "ValidationError") {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error("Sign up failed:", error);
     res.status(500).json({ error: `Internal server error ${error.message}` });
   }
 };
@@ -82,12 +84,20 @@ export const EmailVerification = async (req, res) => {
     user.verificationTokenExpiresAt = undefined;
 
     await user.save();
-    await sendEmail({
-      to: user.email,
-      subject: "Email Verification Successful",
-      html: welcomeTemplate({ name: user.name }),
-      text: "Your email has been verified successfully!",
-    });
+
+    generateTokenAndSetCookie(res, user._id);
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Email Verification Successful",
+        html: welcomeTemplate({ name: user.name }),
+        text: "Your email has been verified successfully!",
+        category: "auth-welcome",
+      });
+    } catch (emailError) {
+      console.error("Failed to send welcome email", emailError);
+    }
 
     res.status(200).json({
       success: true,
@@ -128,15 +138,13 @@ export const login = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      success: true,
       message: "Login successful",
       user: {
-        success: true,
-        user: {
-          ...user.toObject(),
-          password: undefined,
-          verificationToken: undefined,
-          imageUrl: user.imageUrl,
-        },
+        ...user.toObject(),
+        password: undefined,
+        verificationToken: undefined,
+        imageUrl: user.imageUrl,
       },
     });
   } catch (error) {

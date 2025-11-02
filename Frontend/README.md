@@ -8,7 +8,7 @@ Modern React SPA built with Vite for the Movies MERN project. It consumes the Ex
 
 - Auth-aware navigation with dynamic dropdown and sidebar content
 - Profile page for renaming the current user (using `/api/users/me`)
-- Admin dashboard table with delete controls (powered by `/api/users/:id`)
+- Admin dashboard adapts per role: super admin manages deletions and approvals while secondary admins escalate requests
 - Responsive movie detail page with adaptive trailer embeds
 - Search + genre browsing with TMDB data and cached breadcrumbs that display movie titles
 
@@ -67,7 +67,7 @@ npm run preview
 ## 🔁 Notable Workflows
 
 - **Name change:** `Profile.index.jsx` posts to `/api/users/me` and updates context on success.
-- **Admin deletes:** `Admin/Dashboard.jsx` lists users and issues `DELETE /api/users/:id` with optimistic UI updates.
+- **Admin actions:** `Admin/Dashboard.jsx` handles direct deletes (`DELETE /api/users/:id`) for super admin, role approvals (`POST /api/users/:id/admin-request`), and escalated requests (`/api/admin-requests`).
 - **Breadcrumb titles:** `components/ui/BreadCrumb.index.jsx` watches the route and fetches TMDB titles for `/movies/:id` paths.
 - **Trailer sizing:** `MovieTrailer.jsx` observes container width to maintain a responsive 16:9 iframe on every device.
 

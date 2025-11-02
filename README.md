@@ -8,6 +8,8 @@ A production-ready **MERN** experience for exploring films, watching trailers, a
 
 - 🔐 **Authentication flow** with session hydration, protected routes, and cookie-based logout that fully clears the client state.
 - 🙋 **Profile management** so signed-in users can rename themselves from the new `/profile` screen.
+- 📬 **Resend email pipeline** delivers verification, welcome, and admin escalation messages.
+- 🧭 **Admin access & action requests** let users ask for elevated permissions while secondary admins escalate delete/promote actions to the super admin.
 - 🛡️ **Admin dashboard** offering user deletion controls directly from the existing data table.
 - 🔎 **Search & browsing** across genres, lazy-loaded routes, and dynamic breadcrumbs that render human-friendly movie titles instead of numeric IDs.
 - 🎞️ **Responsive trailers** embedded with aspect ratio handling that adapts to every screen size.
@@ -21,7 +23,7 @@ A production-ready **MERN** experience for exploring films, watching trailers, a
 | ----------- | ------------------------------------------------------- |
 | Frontend    | React 19, Vite 7, Tailwind CSS, Radix UI, Framer Motion |
 | Backend     | Node.js 20, Express 4, Mongoose, JWT, bcryptjs          |
-| Data / APIs | MongoDB, TMDB API, SendGrid                             |
+| Data / APIs | MongoDB, TMDB API, Resend                               |
 
 ---
 
@@ -69,65 +71,13 @@ Create `.env` files in both apps.
 PORT=5000
 MONGODB_URI=<your-mongodb-uri>
 JWT_SECRET=<your-jwt-secret>
-SENDGRID_API_KEY=<sendgrid-key>
-EMAIL_FROM=<no-reply@example.com>
+RESEND_API_KEY=<your-resend-api-key>
+# Optional: only override if you have verified your own domain in Resend
+# RESEND_FROM_EMAIL="Movie Hub <no-reply@yourdomain.com>"
+SUPERADMIN_FALLBACK_EMAIL=<optional-backup-email>
+APP_URL=https://moviedb-ch39.onrender.com
+APP_DASHBOARD_URL=https://moviedb-ch39.onrender.com/dashboard
 NODE_ENV=development
 ```
 
-`Frontend/.env`
-
-```
-VITE_API_BASE_URL=http://localhost:5000
-VITE_TMDB_BEARER=<tmdb-read-access-token>
-```
-
-### 3. Run Locally
-
-```bash
-# backend
-cd Backend
-npm run dev
-
-# frontend (new terminal)
-cd Frontend
-npm run dev
-```
-
-Visit <http://localhost:5173>.
-
----
-
-## 🔁 Key Workflows
-
-- **Profile rename:** `PATCH /api/users/me` secured by `verifyToken`; the React profile screen uses optimistic updates and toast feedback.
-- **Admin delete:** `DELETE /api/users/:id` restricted by `isAdmin`, surfaced in the dashboard table.
-- **Breadcrumb titles:** On `/movies/:id` the UI fetches TMDB details and caches titles locally for human-friendly navigation.
-- **Logout fix:** Server clears cookies with matching attributes (SameSite + secure), client clears context to avoid stale UI.
-
----
-
-## 🧪 Helpful Commands
-
-| Location    | Command           | Description                       |
-| ----------- | ----------------- | --------------------------------- |
-| `Backend/`  | `npm run dev`     | Start Express server with nodemon |
-|             | `npm run start`   | Start in production mode          |
-| `Frontend/` | `npm run dev`     | Vite dev server with HMR          |
-|             | `npm run build`   | Production build                  |
-|             | `npm run preview` | Preview built assets              |
-
----
-
-## 🛟 Troubleshooting
-
-- **CORS PATCH errors** – ensure the backend server has been restarted after updating the `cors` middleware (now includes `PATCH`).
-- **Missing trailer video** – verify the TMDB bearer token has permissions for `/movie/{id}` with `append_to_response=videos`.
-- **Cookies not set** – when testing via HTTPS ensure `NODE_ENV=production` so cookies use `SameSite="none"` and `secure=true`.
-
----
-
-## 📬 Support & Contributions
-
-Open issues or PRs are welcome. For questions reach out via GitHub issues.
-
-Enjoy the movies! 🍿
+`

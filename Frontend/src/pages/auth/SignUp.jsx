@@ -13,70 +13,20 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 
 function SignUp() {
-  const { signUp, verifyEmail, loading, error, clearError } = useAuth();
+  const { signUp, loading, error, clearError } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [code, setCode] = useState("");
-  const [step, setStep] = useState("form"); // form -> verify
   const nav = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       await signUp(form);
-      toast.success("Account created. Check your email for the 6-digit code.");
-      setStep("verify");
+      toast.success("Account created. Welcome to Movie Hub!");
+      nav(path.home);
     } catch (err) {
       toast.error(err?.message || "Sign up failed");
     }
   };
-
-  const onVerify = async (e) => {
-    e.preventDefault();
-    try {
-      await verifyEmail(code);
-      toast.success("Email verified. You’re in.");
-      nav("/");
-    } catch (err) {
-      toast.error(err?.message || "Verification failed");
-    }
-  };
-
-  if (step === "verify") {
-    return (
-      <form
-        onSubmit={onVerify}
-        className="max-w-sm mx-auto p-6 flex flex-col gap-4"
-      >
-        <h1 className="text-xl font-bold">Verify your email</h1>
-        {error && (
-          <div
-            className="text-red-600 text-sm cursor-pointer"
-            onClick={clearError}
-          >
-            {error}
-          </div>
-        )}
-
-        <Input
-          placeholder="Enter 6-digit code"
-          value={code}
-          onChange={(e) => {
-            if (error) clearError();
-            setCode(e.target.value);
-          }}
-          required
-        />
-        <p className="text-sm text-muted-foreground">
-          If you entered a mail.ru or other non-gmail address, you might receive
-          the code. In case you don't receive it, just forget it due to sandbox
-          restrictions.
-        </p>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Verifying..." : "Verify"}
-        </Button>
-      </form>
-    );
-  }
 
   return (
     <motion.div

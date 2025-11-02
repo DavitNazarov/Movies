@@ -1,6 +1,7 @@
 {
   "name": "movies",
   "version": "1.0.0",
+  "type": "module",
   "main": "Frontend/main.jsx",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -23,7 +24,6 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.5",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -32,8 +32,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "jsonwebtoken": "^9.0.2",
-    "mailtrap": "^4.2.0",
     "mongoose": "^8.16.4",
-    "nodemailer": "^6.10.1"
+    "resend": "^4.1.0"
   }
 }

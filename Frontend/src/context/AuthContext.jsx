@@ -44,7 +44,6 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      // cookie set server-side; backend may or may not return full user
       if (data?.user) setUser(data.user);
       return data;
     } catch (e) {
@@ -92,11 +91,10 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
+      setUser(null);
     } catch (err) {
       console.error("Logout failed:", err);
       throw err;
-    } finally {
-      setUser(null);
     }
   };
   const refreshMe = async () => {

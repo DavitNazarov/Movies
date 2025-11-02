@@ -7,6 +7,7 @@ import path from "path";
 import authRoutes from "./routes/auth.route.js";
 import { connectDB } from "./db/connectDB.js";
 import usersRouter from "./routes/users.route.js";
+import adminRequestsRouter from "./routes/adminRequests.route.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use(
 // ===== Routes =====
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRouter);
+app.use("/api/admin-requests", adminRequestsRouter);
 
 // ===== Serve React build =====
 app.use(express.static(path.join(__dirname, "dist")));

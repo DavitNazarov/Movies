@@ -27,6 +27,10 @@ export const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isSuperAdmin: {
+    type: Boolean,
+    default: false,
+  },
 
   createdAt: {
     type: Date,
@@ -43,6 +47,22 @@ export const UserSchema = new mongoose.Schema({
 
   verificationToken: String,
   verificationTokenExpiresAt: Date,
+
+  adminRequestStatus: {
+    type: String,
+    enum: ["none", "pending", "approved", "declined"],
+    default: "none",
+  },
+  adminRequestMessage: {
+    type: String,
+    default: "",
+  },
+  adminRequestAt: {
+    type: Date,
+  },
+  adminRequestResolvedAt: {
+    type: Date,
+  },
 });
 
 export const User = mongoose.model("User", UserSchema);
