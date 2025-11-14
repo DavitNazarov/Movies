@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { api, getErr } from "@/lib/api";
 
 const AuthContext = createContext(null);
@@ -12,10 +19,32 @@ export const useAuth = () => useContext(AuthContext);
  * POST /api/auth/logout
  * GET  /api/auth/me -> { user } (or 401)
  */
+const normalizeUser = (value) => {
+  if (!value || typeof value !== "object") return value;
+  return {
+    ...value,
+    favoriteMovies: Array.isArray(value.favoriteMovies)
+      ? value.favoriteMovies
+      : [],
+    ratings: Array.isArray(value.ratings) ? value.ratings : [],
+  };
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined); // undefined = not checked yet
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const setUserSafe = useCallback((value) => {
+    if (typeof value === "function") {
+      setUser((prev) => {
+        const nextValue = value(prev);
+        return normalizeUser(nextValue);
+      });
+    } else {
+      setUser(normalizeUser(value));
+    }
+  }, []);
 
   // Initial session hydration
   useEffect(() => {
@@ -24,10 +53,10 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await api.get("/api/auth/me");
         if (!ok) return;
-        setUser(data?.user ?? data ?? null);
+        setUserSafe(data?.user ?? data ?? null);
       } catch {
         if (!ok) return;
-        setUser(null);
+        setUserSafe(null);
       }
     })();
     return () => {
@@ -44,7 +73,7 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      if (data?.user) setUser(data.user);
+      if (data?.user) setUserSafe(data.user);
       return data;
     } catch (e) {
       const msg = getErr(e);
@@ -60,7 +89,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const { data } = await api.post("/api/auth/verify-email", { code });
-      if (data?.user) setUser(data.user);
+      if (data?.user) setUserSafe(data.user);
       return data;
     } catch (e) {
       const msg = getErr(e);
@@ -78,7 +107,7 @@ export function AuthProvider({ children }) {
       const { data } = await api.post("/api/auth/login", { email, password });
       // flatten nested structure
       const loggedUser = data.user?.user || data.user;
-      setUser(loggedUser);
+      setUserSafe(loggedUser);
       return loggedUser;
     } catch (e) {
       const msg = getErr(e);
@@ -91,7 +120,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await api.post("/api/auth/logout");
-      setUser(null);
+      setUserSafe(null);
     } catch (err) {
       console.error("Logout failed:", err);
       throw err;
@@ -100,10 +129,10 @@ export function AuthProvider({ children }) {
   const refreshMe = async () => {
     try {
       const { data } = await api.get("/api/auth/me");
-      setUser(data?.user ?? data ?? null);
+      setUserSafe(data?.user ?? data ?? null);
       return data;
     } catch (e) {
-      setUser(null);
+      setUserSafe(null);
       throw new Error(getErr(e));
     }
   };
@@ -118,10 +147,10 @@ export function AuthProvider({ children }) {
       login,
       logout,
       refreshMe,
-      setUser,
+      setUser: setUserSafe,
       clearError: () => setError(null),
     }),
-    [user, loading, error]
+    [user, loading, error, setUserSafe]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

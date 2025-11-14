@@ -9,6 +9,7 @@ export const Dashboard = lazy(() => import("@/pages/Admin/Dashboard"));
 export const Fiction = lazy(() => import("@/pages/Fiction.index"));
 export const More = lazy(() => import("@/pages/More"));
 export const Profile = lazy(() => import("@/pages/Profile.index"));
+export const Portfolio = lazy(() => import("@/pages/Portfolio.index"));
 // Auth
 export const LogIn = lazy(() => import("@/pages/auth/LogIn"));
 export const SignUp = lazy(() => import("@/pages/auth/SignUp"));

@@ -14,8 +14,8 @@ export const verifyToken = async (req, res, next) => {
         .json({ success: false, message: "Unauthorized - invalid token" });
 
     // Fetch user from DB
-    const user = await User.findById(decoded.userId).select(
-      "_id name email imageUrl isAdmin isSuperAdmin isVerified adminRequestStatus adminRequestMessage adminRequestAt adminRequestResolvedAt"
+  const user = await User.findById(decoded.userId).select(
+      "_id name email imageUrl isAdmin isSuperAdmin isVerified adminRequestStatus adminRequestMessage adminRequestAt adminRequestResolvedAt favoriteMovies ratings"
     );
     if (!user)
       return res.status(401).json({ success: false, message: "Unauthorized" });

@@ -6,6 +6,7 @@ import MovieBackdrop from "@/components/movies/MovieBackdrop";
 import MovieContent from "@/components/movies/MovieContent";
 import MovieTrailer from "@/components/movies/MovieTrailer";
 import MoviesSimilar from "@/components/movies/MoviesSimilar";
+import MovieActions from "@/components/movies/MovieActions";
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -72,6 +73,8 @@ const MovieDetail = () => {
           status={movie.status}
           popularity={movie.popularity}
         />
+
+        <MovieActions movie={movie} />
 
         {/* Trailer */}
         <MovieTrailer trailer={trailer} />

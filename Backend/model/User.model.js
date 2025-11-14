@@ -63,6 +63,30 @@ export const UserSchema = new mongoose.Schema({
   adminRequestResolvedAt: {
     type: Date,
   },
+  favoriteMovies: {
+    type: [
+      {
+        movieId: { type: Number, required: true },
+        title: { type: String, default: "" },
+        posterPath: { type: String, default: "" },
+        backdropPath: { type: String, default: "" },
+        releaseDate: { type: String, default: "" },
+        voteAverage: { type: Number, default: null },
+        addedAt: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
+  },
+  ratings: {
+    type: [
+      {
+        movieId: { type: Number, required: true },
+        rating: { type: Number, min: 1, max: 5, required: true },
+        updatedAt: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
+  },
 });
 
 export const User = mongoose.model("User", UserSchema);

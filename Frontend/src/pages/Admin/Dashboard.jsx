@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { BadgeCheck, BellRing, Check, Clock, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ACTION_LABELS = {
   delete_user: "Delete user",
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const [decisionUserId, setDecisionUserId] = useState(null);
   const [requestDecisionId, setRequestDecisionId] = useState(null);
   const [submittingActionKey, setSubmittingActionKey] = useState(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
   const { user: currentUser } = useAuth();
 
   const isAdmin = Boolean(currentUser?.isAdmin);
@@ -221,6 +223,31 @@ const Dashboard = () => {
     [refreshData]
   );
 
+  const handleDirectStatusChange = useCallback(
+    async (id, updates) => {
+      if (!isSuperAdmin) return;
+      setUpdatingStatusId(id);
+      try {
+        const { data } = await api.patch(`/api/users/${id}/status`, updates);
+        if (data?.user) {
+          setUsers((prev) =>
+            prev.map((item) =>
+              item._id === id ? { ...item, ...data.user } : item
+            )
+          );
+        } else {
+          await loadUsers();
+        }
+        toast.success("Status updated");
+      } catch (err) {
+        toast.error(getErr(err));
+      } finally {
+        setUpdatingStatusId(null);
+      }
+    },
+    [isSuperAdmin, loadUsers]
+  );
+
   if (usersLoading) return <Loading />;
   if (usersError)
     return <div className="text-red-500">Error: {usersError}</div>;
@@ -328,6 +355,44 @@ const Dashboard = () => {
                             <Check className="size-4" />
                           </Button>
                         </>
+                      )}
+
+                      {isSuperAdmin && !isSelf && !user.isSuperAdmin && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={updatingStatusId === user._id}
+                          onClick={() =>
+                            handleDirectStatusChange(user._id, {
+                              isAdmin: !user.isAdmin,
+                            })
+                          }
+                        >
+                          {updatingStatusId === user._id
+                            ? "Updating..."
+                            : user.isAdmin
+                            ? "Remove admin"
+                            : "Make admin"}
+                        </Button>
+                      )}
+
+                      {isSuperAdmin && !isSelf && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={updatingStatusId === user._id}
+                          onClick={() =>
+                            handleDirectStatusChange(user._id, {
+                              isVerified: !user.isVerified,
+                            })
+                          }
+                        >
+                          {updatingStatusId === user._id
+                            ? "Updating..."
+                            : user.isVerified
+                            ? "Mark unverified"
+                            : "Mark verified"}
+                        </Button>
                       )}
 
                       {canRequestDelete && (
@@ -465,8 +530,14 @@ const Dashboard = () => {
                   const status = request.status;
                   const isPending = status === "pending";
 
+                  const rowClassName = cn(
+                    status === "pending"
+                      ? "bg-white shadow-sm ring-1 ring-amber-100/70"
+                      : "bg-zinc-50/70 text-zinc-500 backdrop-blur-[1px]"
+                  );
+
                   return (
-                    <TableRow key={request._id}>
+                    <TableRow key={request._id} className={rowClassName}>
                       {isSuperAdmin && (
                         <TableCell>
                           <div className="flex flex-col">

@@ -54,7 +54,14 @@ export function NavMain({ items }) {
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild tooltip={item.name}>
               <Link to={item.url}>
-                <item.icon />
+                <span className="relative inline-flex">
+                  <item.icon className="size-5" />
+                  {typeof item.badge === "number" && item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] rounded-full bg-rose-500 px-1 text-[10px] font-semibold leading-4 text-white">
+                      {item.badge > 99 ? "99+" : item.badge}
+                    </span>
+                  )}
+                </span>
                 <span>{item.name}</span>
               </Link>
             </SidebarMenuButton>
