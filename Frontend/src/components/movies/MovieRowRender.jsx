@@ -1,27 +1,51 @@
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import MovieCard from "@/components/movies/MovieCard.slider";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import "./MovieRowRender.css";
+
 const MovieRowRender = ({ title, movies }) => {
+  const safeMovies = useMemo(
+    () => (Array.isArray(movies) ? movies.filter(Boolean) : []),
+    [movies]
+  );
+
   return (
-    <section className="mt-6 sm:mt-10">
-      <h2 className="text-lg sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-5 text-gray-900 dark:text-gray-100">
-        {title}
-      </h2>
-      <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-zinc-900/40 shadow-sm">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex space-x-3 sm:space-x-5 md:space-x-6 p-3 sm:p-4">
-            {movies?.map((movie) => (
-              <div
-                key={movie.id}
-                className="min-w-[150px] sm:min-w-[180px] md:min-w-[220px] flex-shrink-0"
-              >
-                <MovieCard movie={movie} />
+    <section className="movie-row">
+      <div className="movie-row__container">
+        <h2 className="movie-row__title">{title}</h2>
+
+        <div className="movie-row__carousel">
+          {safeMovies.map((movie) => (
+            <Link
+              key={movie.id}
+              to={`/movies/${movie.id}`}
+              className="movie-card"
+            >
+              <div className="movie-card__image-wrapper">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  loading="lazy"
+                />
               </div>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+              <div className="movie-card__body">
+                <p className="movie-card__title">{movie.title}</p>
+                <div className="movie-card__meta">
+                  <span className="movie-card__rating">
+                    ★ {Number(movie.vote_average || 0).toFixed(1)}
+                  </span>
+                  {movie.release_date && (
+                    <span className="movie-card__year">
+                      {new Date(movie.release_date).getFullYear()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
 };
+
 export default MovieRowRender;

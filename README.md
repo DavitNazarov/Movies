@@ -14,6 +14,11 @@ A production-ready **MERN** experience for exploring films, watching trailers, a
 - 🔎 **Search & browsing** across genres, lazy-loaded routes, and dynamic breadcrumbs that render human-friendly movie titles instead of numeric IDs.
 - 🎞️ **Responsive trailers** embedded with aspect ratio handling that adapts to every screen size.
 - ✉️ **Email verification** pipeline and welcome messages for new accounts.
+- ❤️ **Favourites system** so authenticated users can rate films, save them, and manage a responsive favourites collection under the primary navigation.
+- 🌟 **Interactive five-star ratings** with hover previews and persisted user feedback that feed aggregate scores.
+- 🎁 **Hero refresh** for the home page with fully responsive gradient cards, spotlight metrics, and curated strip badges.
+- 🧾 **Rich admin tooling** that now includes direct status toggles (verify/promote) and enhanced request visibility with state-based row styling.
+- 🧲 **Similar movies carousel** redesigned to match the global slider aesthetic, including year stamps and silky hover states.
 
 ---
 

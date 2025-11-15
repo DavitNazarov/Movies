@@ -21,8 +21,8 @@ const normalizeFavorites = (items = []) =>
       typeof fav.voteAverage === "number"
         ? fav.voteAverage
         : typeof fav.vote_average === "number"
-        ? fav.vote_average
-        : null,
+          ? fav.vote_average
+          : null,
   }));
 
 const Portfolio = () => {
@@ -112,7 +112,8 @@ const Portfolio = () => {
               Please register to add favourite movies
             </h2>
             <p className="text-sm text-rose-600">
-              Create an account or sign in to start saving your favourite titles.
+              Create an account or sign in to start saving your favourite
+              titles.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -183,26 +184,27 @@ const Portfolio = () => {
         emptyContent
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
             {favorites.map((movie) => (
               <div
                 key={movie.id}
-                className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+                className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white/95 p-3.5 shadow-sm transition hover:shadow-md"
               >
-                <MovieCard m={movie} onSelect={handleSelect} />
+                <MovieCard m={movie} onSelect={handleSelect} size="sm" />
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-black">
+                    <h3 className="text-base font-semibold text-black sm:text-lg">
                       {movie.title}
                     </h3>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-xs text-zinc-500 sm:text-sm">
                       {movie.release_date
                         ? new Date(movie.release_date).getFullYear()
                         : "Unknown year"}
                     </p>
                   </div>
                   <Button
-                    variant="outline"
+                    className="cursor-pointer"
+                    variant="destructive"
                     size="sm"
                     onClick={() => handleRemove(movie.movieId)}
                   >
@@ -220,4 +222,3 @@ const Portfolio = () => {
 };
 
 export default Portfolio;
-

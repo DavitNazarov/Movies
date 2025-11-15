@@ -118,3 +118,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Override Radix ScrollArea auto wrapper to avoid forcing wide layout */
+[data-slot="scroll-area-viewport"] > div[style*="display: table"] {
+  display: block !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
