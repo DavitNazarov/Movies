@@ -17,7 +17,7 @@ import {
   SignUp,
   NotFound,
   Profile,
-  Portfolio,
+  Favourites,
 } from "@/pages/lazyPages";
 import AdminRoute from "@/components/auth/AdminRoute";
 
@@ -46,7 +46,7 @@ export const AppRoutes = () => {
           <Route path={path.drama} element={<Drama />} />
           <Route path={path.fiction} element={<Fiction />} />
           <Route path={path.search} element={<More />} />
-          <Route path={path.portfolio} element={<Portfolio />} />
+          <Route path={path.favourites} element={<Favourites />} />
           {/* Admin */}
           <Route
             path={path.admin}

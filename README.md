@@ -10,15 +10,16 @@ A production-ready **MERN** experience for exploring films, watching trailers, a
 - 🙋 **Profile management** so signed-in users can rename themselves from the new `/profile` screen.
 - 📬 **Resend email pipeline** delivers verification, welcome, and admin escalation messages.
 - 🧭 **Admin access & action requests** let users ask for elevated permissions while secondary admins escalate delete/promote actions to the super admin.
-- 🛡️ **Admin dashboard** offering user deletion controls directly from the existing data table.
-- 🔎 **Search & browsing** across genres, lazy-loaded routes, and dynamic breadcrumbs that render human-friendly movie titles instead of numeric IDs.
+- 🛡️ **Admin dashboard** offering user deletion controls directly from the existing data table. Admins can only remove or make admin (removed "mark unverified" function). Each table has a manual refresh button - tables only refresh on button click or page reload (no automatic polling).
+- 🔎 **Responsive search** - search input appears in the main page after welcome section on mobile, and in the sidebar on desktop.
 - 🎞️ **Responsive trailers** embedded with aspect ratio handling that adapts to every screen size.
 - ✉️ **Email verification** pipeline and welcome messages for new accounts.
-- ❤️ **Favourites system** so authenticated users can rate films, save them, and manage a responsive favourites collection under the primary navigation.
+- ❤️ **Favourites system** (renamed from Portfolio) so authenticated users can rate films, save them, and manage a responsive favourites collection under the primary navigation.
 - 🌟 **Interactive five-star ratings** with hover previews and persisted user feedback that feed aggregate scores.
 - 🎁 **Hero refresh** for the home page with fully responsive gradient cards, spotlight metrics, and curated strip badges.
-- 🧾 **Rich admin tooling** that now includes direct status toggles (verify/promote) and enhanced request visibility with state-based row styling.
+- 🧾 **Rich admin tooling** with enhanced request visibility and state-based row styling. Admin status now shows "Made by super admin" when promoted directly without a request. History modals for viewing past requests (last 30 days), user management modal with search functionality, and manual refresh buttons on all tables.
 - 🧲 **Similar movies carousel** redesigned to match the global slider aesthetic, including year stamps and silky hover states.
+- 📢 **Ad banner system** - logged-in users can request to display ads in banner sections between movie rows. Ads include image (URL or file upload), link URL, start/end dates, and are automatically shown/hidden based on dates. Super admin can approve/decline/deactivate requests in the dashboard, while other admins can view but not act. Overlapping date validation prevents conflicts, and deactivated ads are excluded from availability checks.
 
 ---
 
@@ -131,6 +132,13 @@ server serves the prebuilt frontend out of `Backend/dist`.
   removing the super admin record).
 - `/api/admin-requests` – endpoints for creating, reviewing, and resolving
   admin action requests between admins and the super admin.
+- `POST /api/ad-requests` – logged-in users can submit ad banner requests with image (URL or file upload), link URL, and date range. Validates for overlapping dates and prevents conflicts.
+- `GET /api/ad-requests` – admin-only listing of all ad requests.
+- `GET /api/ad-requests/active` – public endpoint to get currently active ads (approved and within date range, excluding deactivated).
+- `GET /api/ad-requests/unavailable-dates` – get unavailable date ranges for date picker validation (only approved ads).
+- `GET /api/ad-requests/me` – get current user's ad requests.
+- `POST /api/ad-requests/:id/decision` – super admin approves or declines ad requests.
+- `POST /api/ad-requests/:id/deactivate` – super admin deactivates an active ad, making its time slot available again.
 
 ---
 
@@ -146,9 +154,38 @@ server serves the prebuilt frontend out of `Backend/dist`.
 - Super admins resolve requests at `/api/admin-requests/:id/decision`, which in
   turn updates the MongoDB user document (promoting, demoting, or deleting) and
   records a `resolvedAt` timestamp plus optional response message.
+- When a super admin makes a user admin directly (without a request), the status shows "Made by super admin" instead of "Approved" to distinguish from request-based promotions.
+- Admin dashboard now only allows removing or making admin - the "mark unverified" function has been removed.
+- **Table Refresh**: Each table (Users, Admin Requests, Ad Requests) has a refresh button at the top right. Tables only refresh on button click or page reload - no automatic polling intervals.
+- **History Modals**: After 5 requests, all requests are moved to a "History" section accessible via a button below each table. History modals show requests from the last 30 days, and old requests are automatically deleted from the database after 30 days via a daily cron job.
+- **User Management Modal**: If there are more than 10 users, a "View All Users" button appears, opening a modal with a searchable list of all users (search by name, email, or status). Users are not deleted after 30 days.
 - Email notifications are sent via Resend when requests are created and when a
   decision is made, using templates in `Backend/mail/templates/`. Configure
   `RESEND_API_KEY` (or `RESEND_API_TOKEN`) to enable deliveries; otherwise the
   system safely logs skipped emails.
+
+## 📢 Ad Banner System
+
+- **Ad Request Model** (`Backend/model/AdRequest.model.js`) stores ad requests with image URL (or uploaded file path), link URL, start/end dates, and status (pending/approved/declined/deactivated).
+- **⚠️ Important**: On Render.com's free tier, the filesystem is ephemeral - uploaded files are lost when the server restarts. For production, consider using cloud storage (AWS S3, Cloudinary) or use image URLs instead of file uploads.
+- **User Flow**:
+  - Logged-in users can submit ad requests from the Profile page (`/profile`).
+  - Users can provide either an image URL or upload an image file (one is required).
+  - Users must provide a link URL where users will be redirected when clicking the banner.
+  - Users select start and end dates using a custom date picker that visually indicates unavailable time slots.
+  - The system prevents overlapping date ranges - if another approved ad is active during the selected time, the user receives a generic error message.
+  - Unavailable date ranges are fetched from the backend and displayed in the date picker.
+- **Admin Flow**:
+  - Super admins can approve, decline, or deactivate active ads in the Admin Dashboard.
+  - Other admins can view ad requests but cannot take action.
+  - Deactivated ads are immediately excluded from availability checks, making their time slots available again.
+- **Display Logic**:
+  - Active ads (approved and within date range, excluding deactivated) are automatically displayed in banner sections between movie rows on the home page.
+  - The system shows countdown information (e.g., "expires in 1 hour") for the current ad.
+  - If another user has a scheduled ad, it shows when it will start (e.g., "user2's ad starts in 1 hour").
+  - After an ad expires, the next scheduled ad automatically appears.
+  - Clicking an active banner redirects users to the specified link URL.
+- **Banner Placement**: Ad banners appear only under Popular Movies on the home page.
+- **History**: Ad requests older than 5 entries are moved to a History modal showing the last 30 days. Old requests are automatically deleted after 30 days via a daily cron job.
 
 ---

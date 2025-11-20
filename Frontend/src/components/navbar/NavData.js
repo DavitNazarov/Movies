@@ -36,7 +36,7 @@ export function buildNavData(user) {
       { name: "About", url: path.about, icon: Users },
       {
         name: "Favourites",
-        url: path.portfolio,
+        url: path.favourites,
         icon: Heart,
         badge: favoriteCount,
       },

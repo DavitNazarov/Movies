@@ -19,12 +19,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
 import { path } from "@/constants/routes.const";
 import { useCallback } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function NavMain({ items }) {
   const [value, setValue] = useState("");
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
   const { isMobile, setOpen, setOpenMobile } = useSidebar();
+  const isMobileDevice = useIsMobile();
 
   // open sidebar
   const openSidebar = useCallback(() => {
@@ -41,15 +43,18 @@ export function NavMain({ items }) {
   return (
     <SidebarGroup>
       <SidebarMenu className="gap-5">
-        <form onSubmit={handleSubmit} onClick={toggleSidebar}>
-          <Input
-            placeholder="Search Movie..."
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onFocus={openSidebar}
-            onClick={openSidebar}
-          />
-        </form>
+        {/* Search input: only show in sidebar on desktop, hidden on mobile */}
+        {!isMobileDevice && (
+          <form onSubmit={handleSubmit} onClick={toggleSidebar}>
+            <Input
+              placeholder="Search Movie..."
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onFocus={openSidebar}
+              onClick={openSidebar}
+            />
+          </form>
+        )}
         {items.mainLinks.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild tooltip={item.name}>

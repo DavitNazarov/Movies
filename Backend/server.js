@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.route.js";
 import { connectDB } from "./db/connectDB.js";
 import usersRouter from "./routes/users.route.js";
 import adminRequestsRouter from "./routes/adminRequests.route.js";
+import adRequestsRouter from "./routes/adRequests.route.js";
+import { startCleanupScheduler } from "./utils/cleanupOldRequests.js";
 
 dotenv.config();
 
@@ -25,6 +27,10 @@ const allowedOrigins = [
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve uploaded images
+// Files in Backend/uploads/ads/ are accessible via /uploads/ads/filename
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -37,6 +43,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Length"],
   })
 );
 
@@ -44,6 +51,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRouter);
 app.use("/api/admin-requests", adminRequestsRouter);
+app.use("/api/ad-requests", adRequestsRouter);
 
 // ===== Serve React build =====
 app.use(express.static(path.join(__dirname, "dist")));
@@ -54,5 +62,6 @@ app.get(/.*/, (_, res) => {
 // ===== Start server =====
 app.listen(PORT, () => {
   connectDB();
+  startCleanupScheduler(); // Start cleanup job for old requests
   console.log(`Server is running on port ${PORT}`);
 });

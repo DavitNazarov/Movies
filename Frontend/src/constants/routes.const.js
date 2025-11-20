@@ -14,6 +14,6 @@ export const path = {
   signUp: "/signup",
 
   forgotPassword: "/forgot-password",
-  portfolio: "/portfolio",
+  favourites: "/favourites",
   notFound: "*",
 };

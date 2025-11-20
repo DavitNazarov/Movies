@@ -1,29 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table";
 import { api, getErr } from "@/lib/api";
 import Loading from "@/components/ui/Loading";
-import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
-import { BadgeCheck, BellRing, Check, Clock, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const ACTION_LABELS = {
-  delete_user: "Delete user",
-  promote_admin: "Promote to admin",
-  demote_admin: "Remove admin",
-};
-
-const formatDate = (value) =>
-  value ? new Date(value).toLocaleString(undefined, { hour12: false }) : "";
+import { DashboardHeader } from "@/components/admin/DashboardHeader";
+import { UsersTable } from "@/components/admin/UsersTable";
+import { AdminRequestsTable } from "@/components/admin/AdminRequestsTable";
+import { AdRequestsTable } from "@/components/admin/AdRequestsTable";
 
 const normalizeId = (value) => {
   if (!value) return "";
@@ -48,6 +31,9 @@ const Dashboard = () => {
   const [requestDecisionId, setRequestDecisionId] = useState(null);
   const [submittingActionKey, setSubmittingActionKey] = useState(null);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
+  const [adRequests, setAdRequests] = useState([]);
+  const [adRequestsLoading, setAdRequestsLoading] = useState(false);
+  const [adRequestDecisionId, setAdRequestDecisionId] = useState(null);
   const { user: currentUser } = useAuth();
 
   const isAdmin = Boolean(currentUser?.isAdmin);
@@ -84,6 +70,20 @@ const Dashboard = () => {
     }
   }, [isAdmin, isSuperAdmin]);
 
+  const loadAdRequests = useCallback(async () => {
+    if (!isAdmin) return;
+    setAdRequestsLoading(true);
+    try {
+      const { data } = await api.get("/api/ad-requests");
+      setAdRequests(data.requests ?? []);
+    } catch (err) {
+      const msg = getErr(err);
+      if (isSuperAdmin) toast.error(msg);
+    } finally {
+      setAdRequestsLoading(false);
+    }
+  }, [isAdmin, isSuperAdmin]);
+
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
@@ -91,9 +91,52 @@ const Dashboard = () => {
   useEffect(() => {
     if (!isAdmin) return;
     loadRequests();
-    const interval = setInterval(loadRequests, 8000);
-    return () => clearInterval(interval);
+    // Removed auto-refresh interval - tables only refresh on button click or page reload
   }, [isAdmin, loadRequests]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    loadAdRequests();
+    // Removed auto-refresh interval - tables only refresh on button click or page reload
+  }, [isAdmin, loadAdRequests]);
+
+  const handleAdRequestDecision = useCallback(
+    async (requestId, decision) => {
+      if (!isSuperAdmin) return;
+      setAdRequestDecisionId(requestId);
+      try {
+        await api.post(`/api/ad-requests/${requestId}/decision`, {
+          decision,
+        });
+        toast.success(
+          decision === "approve" ? "Ad request approved" : "Ad request declined"
+        );
+        await loadAdRequests();
+      } catch (err) {
+        toast.error(getErr(err));
+      } finally {
+        setAdRequestDecisionId(null);
+      }
+    },
+    [isSuperAdmin, loadAdRequests]
+  );
+
+  const handleDeactivateAd = useCallback(
+    async (requestId) => {
+      if (!isSuperAdmin) return;
+      setAdRequestDecisionId(requestId);
+      try {
+        await api.post(`/api/ad-requests/${requestId}/deactivate`);
+        toast.success("Ad has been deactivated");
+        await loadAdRequests();
+      } catch (err) {
+        toast.error(getErr(err));
+      } finally {
+        setAdRequestDecisionId(null);
+      }
+    },
+    [isSuperAdmin, loadAdRequests]
+  );
 
   const pendingUserRequests = useMemo(
     () => users.filter((user) => user.adminRequestStatus === "pending"),
@@ -254,381 +297,50 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8 p-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        {pendingUserRequests.length > 0 && (
-          <span className="flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800">
-            <BellRing className="size-4" />
-            {pendingUserRequests.length} user promotion pending
-          </span>
-        )}
-        {isSuperAdmin && pendingAdminActionRequests.length > 0 && (
-          <span className="flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800">
-            <Clock className="size-4" />
-            {pendingAdminActionRequests.length} admin requests waiting
-          </span>
-        )}
-      </div>
+      <DashboardHeader
+        pendingUserRequests={pendingUserRequests}
+        pendingAdminActionRequests={pendingAdminActionRequests}
+        isSuperAdmin={isSuperAdmin}
+      />
 
-      <Table>
-        <TableCaption>Manage user accounts.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>№</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Admin</TableHead>
-            <TableHead>Verified</TableHead>
-            <TableHead>Request</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={7}
-                className="py-6 text-center text-muted-foreground"
-              >
-                No users found.
-              </TableCell>
-            </TableRow>
-          ) : (
-            users.map((user, index) => {
-              const isSelf = user._id === currentUser?._id;
-              const pendingPromotion = user.adminRequestStatus === "pending";
-              const canRequestDelete =
-                !isSuperAdmin && !isSelf && !user.isSuperAdmin;
-              const canRequestPromote =
-                !isSuperAdmin && !user.isAdmin && !isSelf;
-              const canRequestDemote =
-                !isSuperAdmin && user.isAdmin && !user.isSuperAdmin && !isSelf;
-
-              return (
-                <TableRow key={user._id || user.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.isAdmin ? "Yes" : "No"}</TableCell>
-                  <TableCell>{user.isVerified ? "Yes" : "No"}</TableCell>
-                  <TableCell>
-                    {pendingPromotion && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
-                        Pending
-                      </span>
-                    )}
-                    {user.adminRequestStatus === "approved" && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
-                        <BadgeCheck className="size-3" /> Approved
-                      </span>
-                    )}
-                    {user.adminRequestStatus === "declined" && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-xs font-medium text-rose-800">
-                        Declined
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex flex-wrap items-center justify-end gap-2">
-                      {isSuperAdmin && pendingPromotion && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-rose-600 hover:text-rose-700"
-                            disabled={decisionUserId === user._id}
-                            onClick={() =>
-                              handleUserAdminDecision(user._id, "reject")
-                            }
-                          >
-                            <X className="size-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-emerald-600 hover:text-emerald-700"
-                            disabled={decisionUserId === user._id}
-                            onClick={() =>
-                              handleUserAdminDecision(user._id, "approve")
-                            }
-                          >
-                            <Check className="size-4" />
-                          </Button>
-                        </>
-                      )}
-
-                      {isSuperAdmin && !isSelf && !user.isSuperAdmin && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={updatingStatusId === user._id}
-                          onClick={() =>
-                            handleDirectStatusChange(user._id, {
-                              isAdmin: !user.isAdmin,
-                            })
-                          }
-                        >
-                          {updatingStatusId === user._id
-                            ? "Updating..."
-                            : user.isAdmin
-                            ? "Remove admin"
-                            : "Make admin"}
-                        </Button>
-                      )}
-
-                      {isSuperAdmin && !isSelf && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={updatingStatusId === user._id}
-                          onClick={() =>
-                            handleDirectStatusChange(user._id, {
-                              isVerified: !user.isVerified,
-                            })
-                          }
-                        >
-                          {updatingStatusId === user._id
-                            ? "Updating..."
-                            : user.isVerified
-                            ? "Mark unverified"
-                            : "Mark verified"}
-                        </Button>
-                      )}
-
-                      {canRequestDelete && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={
-                            submittingActionKey === `${user._id}:delete_user` ||
-                            hasPendingAction(user._id, "delete_user")
-                          }
-                          onClick={() =>
-                            handleSubmitActionRequest(user._id, "delete_user")
-                          }
-                        >
-                          {hasPendingAction(user._id, "delete_user")
-                            ? "Delete pending"
-                            : "Request delete"}
-                        </Button>
-                      )}
-
-                      {canRequestPromote && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={
-                            submittingActionKey ===
-                              `${user._id}:promote_admin` ||
-                            hasPendingAction(user._id, "promote_admin")
-                          }
-                          onClick={() =>
-                            handleSubmitActionRequest(user._id, "promote_admin")
-                          }
-                        >
-                          {hasPendingAction(user._id, "promote_admin")
-                            ? "Promotion pending"
-                            : "Request promote"}
-                        </Button>
-                      )}
-
-                      {canRequestDemote && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={
-                            submittingActionKey ===
-                              `${user._id}:demote_admin` ||
-                            hasPendingAction(user._id, "demote_admin")
-                          }
-                          onClick={() =>
-                            handleSubmitActionRequest(user._id, "demote_admin")
-                          }
-                        >
-                          {hasPendingAction(user._id, "demote_admin")
-                            ? "Demotion pending"
-                            : "Request demote"}
-                        </Button>
-                      )}
-
-                      {isSuperAdmin && !isSelf && !user.isSuperAdmin && (
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          disabled={deletingId === user._id}
-                          onClick={() => handleDelete(user._id)}
-                        >
-                          {deletingId === user._id ? "Deleting..." : "Delete"}
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
+      <UsersTable
+        users={users}
+        currentUser={currentUser}
+        isSuperAdmin={isSuperAdmin}
+        decisionUserId={decisionUserId}
+        updatingStatusId={updatingStatusId}
+        deletingId={deletingId}
+        submittingActionKey={submittingActionKey}
+        hasPendingAction={hasPendingAction}
+        handleUserAdminDecision={handleUserAdminDecision}
+        handleDirectStatusChange={handleDirectStatusChange}
+        handleDelete={handleDelete}
+        handleSubmitActionRequest={handleSubmitActionRequest}
+        onRefresh={loadUsers}
+      />
 
       {isAdmin && (
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Admin action requests</h2>
-          <Table>
-            <TableCaption>
-              {isSuperAdmin
-                ? "Review and resolve admin action requests."
-                : "Track the status of your requests."}
-            </TableCaption>
-            <TableHeader>
-              <TableRow>
-                {isSuperAdmin && <TableHead>Requester</TableHead>}
-                <TableHead>Target</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead>Response</TableHead>
-                {isSuperAdmin && (
-                  <TableHead className="text-right">Decision</TableHead>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {requestsLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={isSuperAdmin ? 7 : 5}
-                    className="py-6 text-center text-muted-foreground"
-                  >
-                    Loading requests...
-                  </TableCell>
-                </TableRow>
-              ) : requestsError ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={isSuperAdmin ? 7 : 5}
-                    className="py-6 text-center text-rose-500"
-                  >
-                    {requestsError}
-                  </TableCell>
-                </TableRow>
-              ) : requests.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={isSuperAdmin ? 7 : 5}
-                    className="py-6 text-center text-muted-foreground"
-                  >
-                    No admin requests yet.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                requests.map((request) => {
-                  const requestTarget = request.target;
-                  const targetName =
-                    requestTarget?.name || request.targetName || "Unknown";
-                  const targetEmail =
-                    requestTarget?.email || request.targetEmail || "";
-                  const status = request.status;
-                  const isPending = status === "pending";
+        <AdminRequestsTable
+          requests={requests}
+          requestsLoading={requestsLoading}
+          requestsError={requestsError}
+          isSuperAdmin={isSuperAdmin}
+          requestDecisionId={requestDecisionId}
+          onAdminActionDecision={handleAdminActionDecision}
+          onRefresh={loadRequests}
+        />
+      )}
 
-                  const rowClassName = cn(
-                    status === "pending"
-                      ? "bg-white shadow-sm ring-1 ring-amber-100/70"
-                      : "bg-zinc-50/70 text-zinc-500 backdrop-blur-[1px]"
-                  );
-
-                  return (
-                    <TableRow key={request._id} className={rowClassName}>
-                      {isSuperAdmin && (
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span>{request.requester?.name || "Unknown"}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {request.requester?.email}
-                            </span>
-                          </div>
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span>{targetName}</span>
-                          {targetEmail && (
-                            <span className="text-xs text-muted-foreground">
-                              {targetEmail}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{ACTION_LABELS[request.action]}</TableCell>
-                      <TableCell>
-                        {status === "pending" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
-                            Pending
-                          </span>
-                        )}
-                        {status === "approved" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800">
-                            Approved
-                          </span>
-                        )}
-                        {status === "declined" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-xs font-medium text-rose-800">
-                            Declined
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDate(request.createdAt)}</TableCell>
-                      <TableCell>
-                        {request.responseMessage
-                          ? request.responseMessage
-                          : status === "pending"
-                          ? "Awaiting response"
-                          : "—"}
-                      </TableCell>
-                      {isSuperAdmin && (
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-rose-600 hover:text-rose-700"
-                              disabled={
-                                !isPending || requestDecisionId === request._id
-                              }
-                              onClick={() =>
-                                handleAdminActionDecision(
-                                  request._id,
-                                  "decline"
-                                )
-                              }
-                            >
-                              <X className="size-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-emerald-600 hover:text-emerald-700"
-                              disabled={
-                                !isPending || requestDecisionId === request._id
-                              }
-                              onClick={() =>
-                                handleAdminActionDecision(
-                                  request._id,
-                                  "approve"
-                                )
-                              }
-                            >
-                              <Check className="size-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </section>
+      {isAdmin && (
+        <AdRequestsTable
+          adRequests={adRequests}
+          adRequestsLoading={adRequestsLoading}
+          isSuperAdmin={isSuperAdmin}
+          adRequestDecisionId={adRequestDecisionId}
+          onAdRequestDecision={handleAdRequestDecision}
+          onDeactivateAd={handleDeactivateAd}
+          onRefresh={loadAdRequests}
+        />
       )}
     </div>
   );

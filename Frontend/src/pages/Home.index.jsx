@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/ui/Loading";
 import MovieRowRender from "@/components/movies/MovieRowRender";
 import { useMoviesSlider } from "@/hooks/useMovies";
+import { MobileSearchInput } from "@/components/ui/MobileSearchInput";
+import { AdBanner } from "@/components/ads/AdBanner";
 
 const Home = () => {
   const { user } = useAuth();
@@ -27,7 +29,8 @@ const Home = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="relative mx-auto max-w-screen-xl overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-[#f6d6ff] via-[#ffe3f3] to-[#fff5d6] shadow-sm dark:border-zinc-800">
+          <div className="movie-row__container">
+            <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-[#f6d6ff] via-[#ffe3f3] to-[#fff5d6] shadow-sm dark:border-zinc-800">
             <div className="absolute left-6 top-8 hidden h-20 w-32 rounded-full bg-white/30 blur-2xl sm:block" />
             <div className="absolute right-12 top-10 hidden h-24 w-36 rounded-full bg-white/25 blur-3xl lg:block" />
             <div className="relative flex flex-col gap-6 px-5 py-6 sm:px-7 sm:py-8 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-10">
@@ -93,10 +96,23 @@ const Home = () => {
               </div>
             </div>
           </div>
+          </div>
+        </motion.section>
+
+        {/* Mobile Search Input - shown only on mobile after welcome section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="md:hidden"
+        >
+          <MobileSearchInput />
         </motion.section>
 
         {/* Rows */}
         <MovieRowRender title="Popular Movies" movies={popular} />
+        {/* Ad Banner Section - shown only under Popular Movies */}
+        <AdBanner />
         <MovieRowRender title="Fiction Movies" movies={fiction} />
         <MovieRowRender title="Drama Movies" movies={drama} />
       </div>
