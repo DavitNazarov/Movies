@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Image } from "@/components/ui/Image";
 import { Input } from "@/components/ui/input";
 import { path } from "@/constants/routes.const";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import { Label } from "@/components/ui/label";
 import OtherAuth from "@/components/auth/OtherAuth";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
@@ -80,6 +80,12 @@ function LogIn() {
               >
                 {loading ? "Logging in..." : "Log In"}
               </Button>
+
+              <div className="text-center text-sm">
+                <Link to={path.forgotPassword} className="underline underline-offset-4">
+                  Forgot password?
+                </Link>
+              </div>
 
               <OtherAuth />
 

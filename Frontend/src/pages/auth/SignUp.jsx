@@ -20,9 +20,14 @@ function SignUp() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signUp(form);
-      toast.success("Account created. Welcome to Movie Hub!");
-      nav(path.home);
+      const data = await signUp(form);
+      if (data?.requiresVerification) {
+        toast.success("Account created! Please check your email for verification code.");
+        nav(path.verifyEmail);
+      } else {
+        toast.success("Account created. Welcome to Movie Hub!");
+        nav(path.home);
+      }
     } catch (err) {
       toast.error(err?.message || "Sign up failed");
     }

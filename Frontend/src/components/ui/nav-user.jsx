@@ -26,12 +26,13 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { path } from "@/constants/routes.const";
 
 export function NavUser({ userInfo }) {
   const { logout, user } = useAuth();
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
@@ -95,6 +96,7 @@ export function NavUser({ userInfo }) {
                 try {
                   await logout();
                   toast.success("Logged out successfully");
+                  navigate(path.logIn);
                 } catch (err) {
                   toast.error("Logout failed");
                 }

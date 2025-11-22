@@ -8,12 +8,20 @@ export const path = {
   search: "/search",
 
   admin: "/dashboard",
+  dashboardUsers: "/dashboard/users",
+  dashboardAdminRequests: "/dashboard/admin-requests",
+  dashboardAdRequests: "/dashboard/ad-requests",
   profile: "/profile",
+  changeName: "/profile/change-name",
+  changePassword: "/profile/change-password",
+  adRequest: "/profile/ad-request",
 
-  logIn: "/logIn",
-  signUp: "/signup",
-
+  logIn: "/log-In",
+  signUp: "/sign-Up",
+  verifyEmail: "/verify-email",
   forgotPassword: "/forgot-password",
+  resetPassword: "/resetpassword",
+
   favourites: "/favourites",
   notFound: "*",
 };

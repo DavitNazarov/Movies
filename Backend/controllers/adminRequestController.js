@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import { AdminActionRequest } from "../model/AdminActionRequest.model.js";
 import { User } from "../model/User.model.js";
-import { sendEmail } from "../mail/sendEmail.js";
+import { sendEmail } from "../mail/sendEmailNodemailer.js";
 import { adminRequestCreatedTemplate } from "../mail/templates/adminRequestCreated.js";
 import { adminRequestDecisionTemplate } from "../mail/templates/adminRequestDecision.js";
 import {

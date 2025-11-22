@@ -4,8 +4,10 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import {
   getRecentUsers,
   getAllUsers,
+  getUserStats,
   updateProfile,
   deleteUser,
+  changePassword,
 } from "../controllers/userController.js";
 import {
   requestAdminRole,
@@ -26,8 +28,10 @@ const router = express.Router();
 
 // User management routes
 router.get("/", verifyToken, isAdmin, getRecentUsers);
+router.get("/stats", verifyToken, isAdmin, getUserStats);
 router.get("/all", verifyToken, isAdmin, getAllUsers);
 router.patch("/me", verifyToken, updateProfile);
+router.patch("/me/password", verifyToken, changePassword);
 router.delete("/:id", verifyToken, isAdmin, deleteUser);
 
 // Admin request routes

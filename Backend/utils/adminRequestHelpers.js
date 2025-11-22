@@ -12,19 +12,56 @@ export const ACTION_SUBJECTS = {
 
 export const populateRequestQuery = (query) =>
   query
-    .populate({ path: "requester", select: "name email" })
-    .populate({ path: "target", select: "name email isAdmin isSuperAdmin" });
+    .populate({
+      path: "requester",
+      select: "name email",
+      strictPopulate: false,
+    })
+    .populate({
+      path: "target",
+      select: "name email isAdmin isSuperAdmin",
+      strictPopulate: false,
+    });
 
 export const populateRequestDoc = (doc) =>
   doc.populate([
-    { path: "requester", select: "name email" },
-    { path: "target", select: "name email isAdmin isSuperAdmin" },
+    { path: "requester", select: "name email", strictPopulate: false },
+    {
+      path: "target",
+      select: "name email isAdmin isSuperAdmin",
+      strictPopulate: false,
+    },
   ]);
 
 export const formatRequestPayload = (doc) => {
-  const obj = doc.toObject();
+  // Get raw requester ID before toObject() (in case user was deleted)
+  const rawRequesterId =
+    doc.get?.("requester") || doc.requester?._id || doc.requester;
   const rawTargetId = doc.target?._id || doc.get?.("target") || doc.target;
+
+  const obj = doc.toObject();
   obj.targetId = rawTargetId ? rawTargetId.toString() : undefined;
+
+  // Handle null requester (if user was deleted or not found)
+  // When a user is deleted, populate() returns null even though the ObjectId exists
+  if (!obj.requester) {
+    if (rawRequesterId) {
+      // Requester ID exists but populate returned null = user was deleted
+      obj.requester = {
+        _id: rawRequesterId.toString(),
+        name: "Deleted User",
+        email: "N/A",
+      };
+    } else {
+      // No requester ID at all (shouldn't happen, but handle gracefully)
+      obj.requester = {
+        _id: null,
+        name: "Unknown",
+        email: "N/A",
+      };
+    }
+  }
+
   return obj;
 };
 

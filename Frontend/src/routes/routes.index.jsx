@@ -11,12 +11,21 @@ import {
   MovieDetail,
   Drama,
   Dashboard,
+  DashboardUsers,
+  DashboardAdminRequests,
+  DashboardAdRequests,
   More,
   Fiction,
   LogIn,
   SignUp,
+  VerifyEmail,
+  ForgotPassword,
+  ResetPassword,
   NotFound,
   Profile,
+  ChangeName,
+  ChangePassword,
+  AdRequest,
   Favourites,
 } from "@/pages/lazyPages";
 import AdminRoute from "@/components/auth/AdminRoute";
@@ -34,11 +43,38 @@ export const AppRoutes = () => {
           {/* //* Auth */}
           <Route path={path.logIn} element={<LogIn />} />
           <Route path={path.signUp} element={<SignUp />} />
+          <Route path={path.verifyEmail} element={<VerifyEmail />} />
+          <Route path={path.forgotPassword} element={<ForgotPassword />} />
+          <Route path={`${path.resetPassword}/:token`} element={<ResetPassword />} />
           <Route
             path={path.profile}
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={path.changeName}
+            element={
+              <ProtectedRoute>
+                <ChangeName />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={path.changePassword}
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={path.adRequest}
+            element={
+              <ProtectedRoute>
+                <AdRequest />
               </ProtectedRoute>
             }
           />
@@ -53,6 +89,30 @@ export const AppRoutes = () => {
             element={
               <AdminRoute>
                 <Dashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={path.dashboardUsers}
+            element={
+              <AdminRoute>
+                <DashboardUsers />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={path.dashboardAdminRequests}
+            element={
+              <AdminRoute>
+                <DashboardAdminRequests />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path={path.dashboardAdRequests}
+            element={
+              <AdminRoute>
+                <DashboardAdRequests />
               </AdminRoute>
             }
           />
